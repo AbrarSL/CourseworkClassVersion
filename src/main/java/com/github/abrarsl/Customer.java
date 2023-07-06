@@ -19,6 +19,10 @@ public class Customer {
         return this.lastName;
     }
 
+    public String getFullName() {
+        return this.firstName + " " + this.lastName;
+    }
+
     public int getBurgersRequired() {
         return this.burgersRequired;
     }
