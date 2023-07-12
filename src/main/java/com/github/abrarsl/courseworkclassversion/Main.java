@@ -86,6 +86,17 @@ public class Main {
         return input.nextLine();
     }
 
+    private static int intInputPrompt(String prompt, int start, int end)
+            throws SelectionOutOfRangeException, NumberFormatException {
+        final int result = Integer.parseInt(inputPrompt(prompt));
+
+        if (result < start || result >= end) {
+            throw new SelectionOutOfRangeException(String.format("Range is %d to %d.", start, end - 1));
+        }
+
+        return result;
+    }
+
     private static void sortCustomers() {
         int totalCustomersLength = 0;
 
@@ -266,13 +277,17 @@ public class Main {
 
     private static void removeCustomerFromQueue() {
         try {
-            int queuePosition = Integer.parseInt(inputPrompt("Enter the queue number to remove customer from: "));
+            int queuePosition = intInputPrompt(
+                    "Enter the queue number to remove customer from: ",
+                    0,
+                    queues.length
+            );
 
-            if (queuePosition < 0 || queuePosition >= queues.length) {
-                throw new SelectionOutOfRangeException(String.format("Range is %d to %d.", 0, queues.length - 1));
-            }
-
-            int customerPosition = Integer.parseInt(inputPrompt("Enter the customer position: "));
+            int customerPosition = intInputPrompt(
+                    "Enter the customer position: ",
+                    0,
+                    queues[queuePosition].getQueueLength()
+            );
 
             try {
                 Customer customer = queues[queuePosition].removeCustomer(customerPosition);
@@ -293,11 +308,11 @@ public class Main {
 
     private static void removeServedCustomer() {
         try {
-            int queuePosition = Integer.parseInt(inputPrompt("Enter the queue number to remove customer from: "));
-
-            if (queuePosition < 0 || queuePosition >= queues.length) {
-                throw new SelectionOutOfRangeException(String.format("Range is %d to %d.", 0, queues.length - 1));
-            }
+            int queuePosition = intInputPrompt(
+                    "Enter the queue number to remove customer from: ",
+                    0,
+                    queues.length
+            );
 
             Customer customer = queues[queuePosition].serveCustomer();
 
