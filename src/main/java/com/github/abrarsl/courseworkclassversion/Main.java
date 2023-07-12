@@ -2,6 +2,8 @@ package com.github.abrarsl.courseworkclassversion;
 
 import com.github.abrarsl.courseworkclassversion.exceptions.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
@@ -10,7 +12,6 @@ public class Main {
     private static final Scanner input = new Scanner(System.in);
     private static final String DECOR_CHARACTER = "*";
     private static final String FOODQUEUE_START_MARK = "FOODQUEUE_START";
-    private static final String FOODQUEUE_END_MARK = "FOODQUEUE_END";
     private static final int HORIZONTAL_PADDING = 10;
     private static final String FILE_PATH = "./programState.txt";
     private static FoodQueue[] queues;
@@ -52,9 +53,9 @@ public class Main {
                 case "SPD", "106":
                     storeProgramData();
                     break;
-                /*case "LPD", "107":
+                case "LPD", "107":
                     loadProgramData();
-                    break;*/
+                    break;
                 case "STK", "108":
                     viewBurgerStock();
                     break;
@@ -334,22 +335,112 @@ public class Main {
     }
 
     private static void storeProgramData() {
+        System.out.printf("Saving data to file: %s%n", FILE_PATH);
+
         try (FileWriter fileWriter = new FileWriter(FILE_PATH)) {
-            fileWriter.write(String.format("%d%n", FoodQueue.getItemStock()));
+            fileWriter.write(String.format(
+                    "%d%n%d%n",
+                    FoodQueue.getItemStock(),
+                    queues.length
+            ));
 
             for (FoodQueue queue : queues) {
                 fileWriter.write(String.format(
-                        "%s%n%s%s%n",
+                        "%s%n%s",
                         FOODQUEUE_START_MARK,
-                        queue,
-                        FOODQUEUE_END_MARK
+                        queue
                 ));
             }
 
             fileWriter.flush();
+
+            System.out.println("Data successfully written to file!");
         } catch (IOException exception) {
             System.out.println("File could not be created!");
-            System.out.println("Error: " + exception.getMessage());
+        }
+    }
+
+    private static void loadProgramData() {
+        System.out.printf("Loading data from file: %s%n", FILE_PATH);
+
+        try (Scanner fileReader = new Scanner(new File(FILE_PATH))) {
+            if (!fileReader.hasNextInt()) {
+                throw new InvalidFileDataException("Stock data not found!");
+            }
+
+            final int newFoodStock = Integer.parseInt(fileReader.nextLine());
+
+            if (!fileReader.hasNextInt()) {
+                throw new InvalidFileDataException("Number of queues not found!");
+            }
+
+            final int numberOfQueues = Integer.parseInt(fileReader.nextLine());
+
+            final FoodQueue[] loadedQueues = new FoodQueue[numberOfQueues];
+
+            for (int i = 0; i < loadedQueues.length; i++) {
+                if (!fileReader.hasNextLine()) {
+                    throw new InvalidFileDataException("FoodQueue information not found!");
+                }
+
+                String fileLine = fileReader.nextLine();
+
+                if (!fileLine.equals(FOODQUEUE_START_MARK)) {
+                    throw new InvalidFileDataException("FoodQueue data marker not found!");
+                }
+
+                if (!fileReader.hasNextInt()) {
+                    throw new InvalidFileDataException("FoodQueue length information not found!");
+                }
+
+                final int queueLength = Integer.parseInt(fileReader.nextLine());
+
+                if (!fileReader.hasNextInt()) {
+                    throw new InvalidFileDataException("FoodQueue income information not found!");
+                }
+
+                final int queueIncome = Integer.parseInt(fileReader.nextLine());
+
+                final Customer[] customers = new Customer[queueLength];
+
+                for (int j = 0; j < customers.length; j++) {
+                    if (!fileReader.hasNextLine()) {
+                        throw new InvalidFileDataException("FoodQueue data ended unexpectedly!");
+                    }
+
+                    String customerData = fileReader.nextLine();
+
+                    if (customerData.equals("null")) {
+                        customers[j] = null;
+                    } else {
+                        String[] parsedInfo = customerData.split(Customer.INFO_DELIMITER);
+
+                        Customer customer = new Customer(
+                                parsedInfo[0],
+                                parsedInfo[1],
+                                Integer.parseInt(parsedInfo[2])
+                        );
+
+                        customers[j] = customer;
+                    }
+                }
+
+                loadedQueues[i] = new FoodQueue(customers, queueIncome);
+            }
+
+            FoodQueue.setItemStock(newFoodStock);
+            queues = loadedQueues;
+
+            System.out.println("Data loaded successfully!");
+        } catch (FileNotFoundException exception) {
+            System.out.println("File was not found!");
+        } catch (InvalidFileDataException exception) {
+            System.out.println(exception.getMessage());
+            System.out.println("Data was not loaded!");
+        } catch (StockOutOfRange exception) {
+            System.out.println("Loaded stock data is out of range!");
+            System.out.println(exception.getMessage());
+            System.out.println("Data was not loaded!");
         }
     }
 
