@@ -4,8 +4,6 @@ public class Customer {
     private final String firstName;
     private final String lastName;
     private final int burgersRequired;
-    public static final String OBJECT_START_MARK = "CUSTOMERSTART";
-    public static final String OBJECT_END_MARK = "CUSTOMEREND";
 
     public Customer(String firstName, String lastName, int burgersRequired) {
         this.firstName = firstName;
@@ -29,11 +27,13 @@ public class Customer {
         return this.burgersRequired;
     }
 
-    public String stringifyState() {
-        String state = OBJECT_START_MARK;
-        state += String.format("%n%s%n%s%n%d%n", this.getFirstName(), this.getLastName(), this.getBurgersRequired());
-        state += OBJECT_END_MARK;
-
-        return state;
+    @Override
+    public String toString() {
+        return String.format(
+                "%s,%s,%d%n",
+                this.getFirstName(),
+                this.getLastName(),
+                this.getBurgersRequired()
+        );
     }
 }

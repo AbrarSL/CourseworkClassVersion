@@ -9,6 +9,8 @@ import java.util.Scanner;
 public class Main {
     private static final Scanner input = new Scanner(System.in);
     private static final String DECOR_CHARACTER = "*";
+    private static final String FOODQUEUE_START_MARK = "FOODQUEUE_START";
+    private static final String FOODQUEUE_END_MARK = "FOODQUEUE_END";
     private static final int HORIZONTAL_PADDING = 10;
     private static final String FILE_PATH = "./programState.txt";
     private static FoodQueue[] queues;
@@ -163,7 +165,14 @@ public class Main {
         final int titlePaddingLength = (headerLength - headerText.length() - 2) / 2;
 
         System.out.println(DECOR_CHARACTER.repeat(headerLength));
-        System.out.println(DECOR_CHARACTER + " ".repeat(titlePaddingLength) + headerText + " ".repeat(titlePaddingLength) + DECOR_CHARACTER);
+        System.out.println(String.format(
+                "%s%s%s%s%s",
+                DECOR_CHARACTER,
+                " ".repeat(titlePaddingLength),
+                headerText,
+                " ".repeat(titlePaddingLength),
+                DECOR_CHARACTER
+        ));
         System.out.println(DECOR_CHARACTER.repeat(headerLength));
     }
 
@@ -292,7 +301,11 @@ public class Main {
             Customer customer = queues[queuePosition].serveCustomer();
 
             shouldSortCustomerList = true;
-            System.out.printf("Customer %s was served %d items!%n", customer.getFullName(), customer.getBurgersRequired());
+            System.out.printf(
+                    "Customer %s was served %d items!%n",
+                    customer.getFullName(),
+                    customer.getBurgersRequired()
+            );
         } catch (NumberFormatException exception) {
             System.out.println("Invalid Input! Enter a number!");
         } catch (SelectionOutOfRangeException exception) {
@@ -322,10 +335,15 @@ public class Main {
 
     private static void storeProgramData() {
         try (FileWriter fileWriter = new FileWriter(FILE_PATH)) {
-            fileWriter.write(FoodQueue.getItemStock());
+            fileWriter.write(String.format("%d%n", FoodQueue.getItemStock()));
 
             for (FoodQueue queue : queues) {
-                fileWriter.write(String.format("%n%s", queue.stringifyState()));
+                fileWriter.write(String.format(
+                        "%s%n%s%s%n",
+                        FOODQUEUE_START_MARK,
+                        queue,
+                        FOODQUEUE_END_MARK
+                ));
             }
 
             fileWriter.flush();
@@ -342,7 +360,9 @@ public class Main {
 
     private static void addToBurgerStock() {
         try {
-            int newBurgerStock = FoodQueue.getItemStock() + Integer.parseInt(inputPrompt("Enter the amount of burgers to add: "));
+            int newBurgerStock = FoodQueue.getItemStock() + Integer.parseInt(
+                    inputPrompt("Enter the amount of burgers to add: ")
+            );
 
             FoodQueue.setItemStock(newBurgerStock);
         } catch (NumberFormatException exception) {

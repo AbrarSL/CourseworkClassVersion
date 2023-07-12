@@ -8,14 +8,6 @@ public class FoodQueue {
     private static final int MIN_STOCK = 0;
     private static final int MAX_STOCK = 50;
     private static final int STOCK_WARN_THRESHOLD = 10;
-    public static final String OBJECT_START_MARK = "FOODQUEUESTART";
-    public static final String OBJECT_END_MARK = "FOODQUEUEEND";
-    public static final String LENGTH_START_MARK = "LENGTHSTART";
-    public static final String LENGTH_END_MARK = "LENGTHEND";
-    public static final String INCOME_START_MARK = "INCOMESTART";
-    public static final String INCOME_END_MARK = "INCOMEEND";
-    public static final String CUSTOMER_ARRAY_START_MARK = "CUSTOMERARRAYSTART";
-    public static final String CUSTOMER_ARRAY_END_MARK = "CUSTOMERARRAYEND";
     private int queueIncome;
     private static int itemStock = 0;
 
@@ -51,7 +43,13 @@ public class FoodQueue {
 
     public static void setItemStock(int newItemStock) throws StockOutOfRange {
         if (newItemStock > MAX_STOCK || newItemStock < MIN_STOCK) {
-            throw new StockOutOfRange(String.format("Stock range is %d to %d.", MIN_STOCK, MAX_STOCK));
+            throw new StockOutOfRange(
+                    String.format(
+                            "Stock range is %d to %d.",
+                            MIN_STOCK,
+                            MAX_STOCK
+                    )
+            );
         }
 
         FoodQueue.itemStock = newItemStock;
@@ -59,7 +57,13 @@ public class FoodQueue {
 
     private void validateSelection(int selection) throws SelectionOutOfRangeException {
         if (selection < 0 || selection >= this.getQueueLength()) {
-            throw new SelectionOutOfRangeException(String.format("Range is %d to %d.", 0, this.getQueueLength() - 1));
+            throw new SelectionOutOfRangeException(
+                    String.format(
+                            "Range is %d to %d.",
+                            0,
+                            this.getQueueLength() - 1
+                    )
+            );
         }
     }
 
@@ -122,26 +126,24 @@ public class FoodQueue {
         return customer;
     }
 
-    public String stringifyState() {
-        String state = OBJECT_START_MARK;
-
-        state += String.format("%n%s%n%d%n%s", LENGTH_START_MARK, this.getQueueLength(), LENGTH_END_MARK);
-        state += String.format("%n%s%n%d%n%s", INCOME_START_MARK, this.getQueueLength(), INCOME_END_MARK);
-
-        state += String.format("%n%s", CUSTOMER_ARRAY_START_MARK);
+    @Override
+    public String toString() {
+        StringBuilder state = new StringBuilder(
+                String.format(
+                        "%d%n%d%n",
+                        this.getQueueLength(),
+                        this.getQueueIncome()
+                )
+        );
 
         for (Customer customer : this.queue) {
-            if (customer == null) {
-                break;
+            if (customer != null) {
+                state.append(customer);
+            } else {
+                state.append(String.format("null%n"));
             }
-
-            state += String.format("%n%s", customer.stringifyState());
         }
 
-        state += String.format("%n%s%n", CUSTOMER_ARRAY_END_MARK);
-
-        state += OBJECT_END_MARK;
-
-        return state;
+        return state.toString();
     }
 }
