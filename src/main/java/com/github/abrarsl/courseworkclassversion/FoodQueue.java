@@ -9,16 +9,28 @@ public class FoodQueue {
     private static final int MAX_STOCK = 50;
     private static final int STOCK_WARN_THRESHOLD = 10;
     private int queueIncome;
+    private int endIndex;
     private static int itemStock = 0;
 
     public FoodQueue(int queueLength) {
         this.queue = new Customer[queueLength];
         this.queueIncome = 0;
+        this.endIndex = 0;
     }
 
     public FoodQueue(Customer[] queue, int income) {
         this.queue = queue;
         this.queueIncome = income;
+        this.endIndex = this.queue.length;
+
+        for (int i = 0; i < this.queue.length; i++) {
+            if (this.queue[i] == null) {
+                this.endIndex = i;
+                break;
+            }
+        }
+
+        System.out.println(this.endIndex);
     }
 
     public int getQueueLength() {
@@ -73,6 +85,7 @@ public class FoodQueue {
         }
 
         this.queue[this.getQueueLength() - 1] = null;
+        this.endIndex--;
     }
 
     public Customer getCustomer(int customerIndex) throws SelectionOutOfRangeException {
@@ -81,16 +94,11 @@ public class FoodQueue {
     }
 
     public void addCustomer(Customer customer) throws FullQueueException {
-        if (this.queue[this.getQueueLength() - 1] != null) {
+        if (this.endIndex >= this.queue.length) {
             throw new FullQueueException();
         }
 
-        for (int i = 0; i < this.getQueueLength(); i++) {
-            if (this.queue[i] == null) {
-                this.queue[i] = customer;
-                return;
-            }
-        }
+        this.queue[this.endIndex++] = customer;
     }
 
     public Customer removeCustomer(int customerIndex) throws SelectionOutOfRangeException, CustomerNotFoundException {
