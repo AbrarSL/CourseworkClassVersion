@@ -475,7 +475,7 @@ public class Main {
         } catch (InvalidFileDataException exception) {
             System.out.println(exception.getMessage());
             System.out.println("Data was not loaded!");
-        } catch (StockOutOfRange exception) {
+        } catch (StockOutOfRangeException exception) {
             System.out.println("Loaded stock data is out of range!");
             System.out.println(exception.getMessage());
             System.out.println("Data was not loaded!");
@@ -500,7 +500,7 @@ public class Main {
             FoodQueue.setItemStock(newBurgerStock);
         } catch (NumberFormatException exception) {
             System.out.println("Invalid Input! Enter a positive number!");
-        } catch (StockOutOfRange exception) {
+        } catch (StockOutOfRangeException exception) {
             System.out.println("Stock is out of range! " + exception.getMessage());
         }
     }

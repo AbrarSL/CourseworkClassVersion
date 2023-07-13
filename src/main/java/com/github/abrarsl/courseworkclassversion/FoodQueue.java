@@ -53,9 +53,9 @@ public class FoodQueue {
         return this.queue[this.getQueueLength() - 1] != null;
     }
 
-    public static void setItemStock(int newItemStock) throws StockOutOfRange {
+    public static void setItemStock(int newItemStock) throws StockOutOfRangeException {
         if (newItemStock > MAX_STOCK || newItemStock < MIN_STOCK) {
-            throw new StockOutOfRange(
+            throw new StockOutOfRangeException(
                     String.format(
                             "Stock range is %d to %d.",
                             MIN_STOCK,
