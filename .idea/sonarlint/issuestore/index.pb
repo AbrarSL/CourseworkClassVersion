@@ -13,3 +13,5 @@ dsrc/main/java/com/github/abrarsl/courseworkclassversion/exceptions/SelectionOut
 bsrc/main/java/com/github/abrarsl/courseworkclassversion/exceptions/InsufficientStockException.java,e/3/e3f97ec262acf82b474c373313ed0bfcfc636ca8
 ê
 `src/main/java/com/github/abrarsl/courseworkclassversion/exceptions/InvalidFileDataException.java,1/0/10eb7a1b616f8e414048765f948856a1671a05d7
+á
+Wsrc/main/java/com/github/abrarsl/courseworkclassversion/exceptions/StockOutOfRange.java,3/5/35f937173d0fcea077e70ef10dcd7b0e2ebabee5

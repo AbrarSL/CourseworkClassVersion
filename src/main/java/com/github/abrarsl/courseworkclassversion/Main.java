@@ -62,6 +62,9 @@ public class Main {
                 case "AFS", "109":
                     addToBurgerStock();
                     break;
+                case "IFQ", "110":
+                    viewQueueIncome();
+                    break;
                 case "EXT", "999":
                     System.out.println("Exiting...");
                     return;
@@ -166,6 +169,7 @@ public class Main {
                 107 or LPD: Load program data from file.
                 108 or STK: View remaining burger stock.
                 109 or AFS: Add burgers to stock.
+                110 or IFQ: View queue income information.
                 999 or EXT: Exit the program.
                 """;
 
@@ -186,6 +190,13 @@ public class Main {
                 DECOR_CHARACTER
         ));
         System.out.println(DECOR_CHARACTER.repeat(headerLength));
+    }
+
+    private static void displayQueueMenu() {
+        displayHeader("Queue Selection");
+        for (int i = 0; i < queues.length; i++) {
+            System.out.printf(String.format("%d - Size %d.%n", i, queues[i].getQueueLength()));
+        }
     }
 
     private static void displayQueues(FoodQueue[] queues) {
@@ -276,6 +287,8 @@ public class Main {
     }
 
     private static void removeCustomerFromQueue() {
+        displayQueueMenu();
+
         try {
             int queuePosition = intInputPrompt(
                     "Enter the queue number to remove customer from: ",
@@ -307,6 +320,8 @@ public class Main {
     }
 
     private static void removeServedCustomer() {
+        displayQueueMenu();
+
         try {
             int queuePosition = intInputPrompt(
                     "Enter the queue number to remove customer from: ",
@@ -475,6 +490,22 @@ public class Main {
             System.out.println("Invalid Input! Enter a positive number!");
         } catch (StockOutOfRange exception) {
             System.out.println("Stock is out of range! " + exception.getMessage());
+        }
+    }
+
+    private static void viewQueueIncome() {
+        displayQueueMenu();
+
+        try {
+            int queueSelection = intInputPrompt("Enter the queue number: ", 0, queues.length);
+
+            displayHeader(String.format("Queue %d Income", queueSelection));
+            System.out.println(queues[queueSelection].getQueueIncome());
+        } catch (NumberFormatException exception) {
+            System.out.println("Please enter a number!");
+        } catch (SelectionOutOfRangeException exception) {
+            System.out.println("Queue number is out of range!");
+            System.out.println(exception.getMessage());
         }
     }
 }
