@@ -200,7 +200,7 @@ public class Main {
     }
 
     private static void displayQueues(FoodQueue[] queues) {
-        final String headerText = "Cashiers";
+        final String headerText = "Cashiers (Queue View)";
         final int longestQueueLength = queues[2].getQueueLength();
         final int headerLength = headerText.length() + HORIZONTAL_PADDING;
         final int paddingLength = ((headerLength / queues.length) - 1) / 2;
@@ -264,6 +264,8 @@ public class Main {
     }
 
     private static void addCustomerToQueue() {
+        displayHeader("Add Customer");
+
         try {
             String customerFirstName = inputPrompt("Enter the customer's first name: ");
             String customerLastName = inputPrompt("Enter the customer's last name: ");
@@ -287,6 +289,7 @@ public class Main {
     }
 
     private static void removeCustomerFromQueue() {
+        displayHeader("Remove Customer");
         displayQueueMenu();
 
         try {
@@ -320,6 +323,7 @@ public class Main {
     }
 
     private static void removeServedCustomer() {
+        displayHeader("Remove Served Customer");
         displayQueueMenu();
 
         try {
@@ -365,6 +369,8 @@ public class Main {
     }
 
     private static void storeProgramData() {
+        displayHeader("Store Program Data");
+
         System.out.printf("Saving data to file: %s%n", FILE_PATH);
 
         try (FileWriter fileWriter = new FileWriter(FILE_PATH)) {
@@ -391,6 +397,8 @@ public class Main {
     }
 
     private static void loadProgramData() {
+        displayHeader("Load Program Data");
+
         System.out.printf("Loading data from file: %s%n", FILE_PATH);
 
         try (Scanner fileReader = new Scanner(new File(FILE_PATH))) {
@@ -480,6 +488,10 @@ public class Main {
     }
 
     private static void addToBurgerStock() {
+        displayHeader("Add Burger Stock");
+
+        System.out.printf("Current Stock: %d%n", FoodQueue.getItemStock());
+
         try {
             int newBurgerStock = FoodQueue.getItemStock() + Integer.parseInt(
                     inputPrompt("Enter the amount of burgers to add: ")
@@ -494,6 +506,7 @@ public class Main {
     }
 
     private static void viewQueueIncome() {
+        displayHeader("View Queue Income");
         displayQueueMenu();
 
         try {
