@@ -15,6 +15,7 @@ public class Main {
     private static final int HORIZONTAL_PADDING = 10;
     private static final String FILE_PATH = "./programState.txt";
     private static FoodQueue[] queues;
+    private static WaitingQueue waitingQueue;
     private static Customer[] sortedCustomerList;
     private static boolean shouldSortCustomerList = true;
 
@@ -76,11 +77,14 @@ public class Main {
 
     private static FoodQueue[] initQueues(int[] queueLayout) {
         FoodQueue[] tempQueue = new FoodQueue[queueLayout.length];
+        int totalLength = 0;
 
         for (int i = 0; i < tempQueue.length; i++) {
+            totalLength += queueLayout[i];
             tempQueue[i] = new FoodQueue(queueLayout[i]);
         }
 
+        waitingQueue = new WaitingQueue(totalLength);
         return tempQueue;
     }
 
@@ -260,7 +264,22 @@ public class Main {
             }
         }
 
-        throw new FullQueueException();
+        waitingQueue.enqueue(customer);
+        return -1;
+    }
+
+    private static void tryAddCustomerFromWaiting() throws FullQueueException {
+        try {
+            if (!waitingQueue.isQueueEmpty()) {
+                Customer waitingCustomer = waitingQueue.dequeue();
+                int queueNumber = tryAddCustomer(waitingCustomer);
+                System.out.printf(
+                        "Customer %s from waiting queue added to queue %d!%n",
+                        waitingCustomer.getFullName(),
+                        queueNumber
+                );
+            }
+        } catch (CustomerNotFoundException ignored) {}
     }
 
     private static void addCustomerToQueue() {
@@ -278,9 +297,15 @@ public class Main {
             Customer customer = new Customer(customerFirstName, customerLastName, customerBurgerNumber);
 
             int queueNumber = tryAddCustomer(customer);
-
             shouldSortCustomerList = true;
-            System.out.printf("Customer %s, added to queue %d!%n", customer.getFullName(), queueNumber);
+
+            String queueName = "queue " + queueNumber;
+
+            if (queueNumber < 0) {
+                queueName = "waiting queue";
+            }
+
+            System.out.printf("Customer %s, added to %s!%n", customer.getFullName(), queueName);
         } catch (NumberFormatException exception) {
             System.out.println("Invalid Input! Enter a positive number!");
         } catch (FullQueueException exception) {
@@ -307,9 +332,11 @@ public class Main {
 
             try {
                 Customer customer = queues[queuePosition].removeCustomer(customerPosition);
-
                 shouldSortCustomerList = true;
+
                 System.out.printf("Removed customer %s!%n", customer.getFirstName());
+
+                tryAddCustomerFromWaiting();
             } catch (SelectionOutOfRangeException exception) {
                 System.out.println("Incorrect customer position! " + exception.getMessage());
             }
@@ -319,7 +346,7 @@ public class Main {
             System.out.println("Incorrect queue number! " + exception.getMessage());
         } catch (CustomerNotFoundException exception) {
             System.out.println(exception.getMessage());
-        }
+        } catch (FullQueueException ignored) {}
     }
 
     private static void removeServedCustomer() {
@@ -334,13 +361,15 @@ public class Main {
             );
 
             Customer customer = queues[queuePosition].serveCustomer();
-
             shouldSortCustomerList = true;
+
             System.out.printf(
                     "Customer %s was served %d items!%n",
                     customer.getFullName(),
                     customer.getBurgersRequired()
             );
+
+            tryAddCustomerFromWaiting();
         } catch (NumberFormatException exception) {
             System.out.println("Invalid Input! Enter a number!");
         } catch (SelectionOutOfRangeException exception) {
@@ -349,7 +378,7 @@ public class Main {
             System.out.printf("Insufficient stock level! Customer requires %s items!%n", exception.getMessage());
         } catch (CustomerNotFoundException exception) {
             System.out.println(exception.getMessage());
-        }
+        } catch (FullQueueException ignored) {}
     }
 
     private static void viewSortedCustomers() {
@@ -387,6 +416,8 @@ public class Main {
                         queue
                 ));
             }
+
+            fileWriter.write(waitingQueue.toString());
 
             fileWriter.flush();
 
@@ -466,8 +497,45 @@ public class Main {
                 loadedQueues[i] = new FoodQueue(customers, queueIncome);
             }
 
+            String fileLine = fileReader.nextLine();
+
+            if (!fileLine.equals(WaitingQueue.WAITINGQUEUE_START_MARK)) {
+                throw new InvalidFileDataException("Waiting queue marker not found!");
+            }
+
+            if (!fileReader.hasNextInt()) {
+                throw new InvalidFileDataException("Waiting queue length info not found!");
+            }
+
+            int waitingQueueLength = Integer.parseInt(fileReader.nextLine());
+
+            Customer[] loadedWaitingQueue = new Customer[waitingQueueLength];
+
+            for (int j = 0; j < loadedWaitingQueue.length; j++) {
+                if (!fileReader.hasNextLine()) {
+                    throw new InvalidFileDataException("Waiting queue data ended unexpectedly!");
+                }
+
+                String customerData = fileReader.nextLine();
+
+                if (customerData.equals("null")) {
+                    loadedWaitingQueue[j] = null;
+                } else {
+                    String[] parsedInfo = customerData.split(Customer.INFO_DELIMITER);
+
+                    Customer customer = new Customer(
+                            parsedInfo[0],
+                            parsedInfo[1],
+                            Integer.parseInt(parsedInfo[2])
+                    );
+
+                    loadedWaitingQueue[j] = customer;
+                }
+            }
+
             FoodQueue.setItemStock(newFoodStock);
             queues = loadedQueues;
+            waitingQueue = new WaitingQueue(loadedWaitingQueue);
 
             System.out.println("Data loaded successfully!");
         } catch (FileNotFoundException exception) {
