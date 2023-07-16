@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<SplitPane dividerPositions="0.3" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.abrarsl.courseworkclassversion.GUIController">
+<SplitPane dividerPositions="0.3" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/20.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.abrarsl.courseworkclassversion.GUIController">
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="323.0">
          <children>
@@ -41,7 +41,7 @@
                   </HBox>
                   <Separator prefWidth="200.0" />
                   <Label alignment="CENTER" text="Controls" />
-                  <Button mnemonicParsing="false" onAction="#initialize" text="Reload" />
+                  <Button mnemonicParsing="false" onAction="#initialize" text="Reload Data" />
                   <Separator prefWidth="200.0" />
                   <TextField fx:id="searchField" promptText="Search Queues" />
                   <Button mnemonicParsing="false" onAction="#handleSearchAction" text="Search" />
