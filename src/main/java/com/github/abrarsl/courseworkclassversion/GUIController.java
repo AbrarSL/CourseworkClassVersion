@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -14,8 +15,10 @@ import javafx.scene.layout.VBox;
 public class GUIController {
     private FoodQueue[] queues;
     private WaitingQueue waitingQueue;
+
     @FXML
     protected HBox queueContainer;
+
     @FXML
     protected Label firstNameLabel;
     @FXML
@@ -24,13 +27,18 @@ public class GUIController {
     protected Label burgerLabel;
 
     @FXML
+    protected TextField searchField;
+    @FXML
+    protected VBox searchResultContainer;
+
+    @FXML
     protected void initialize() {
         this.queues = Main.getQueues();
         this.waitingQueue = Main.getWaitingQueue();
         this.queueContainer.getChildren().clear();
 
-        constructQueues();
-        constructWaitingQueues();
+        this.constructQueues();
+        this.constructWaitingQueues();
     }
 
     protected void constructQueues() {
@@ -55,7 +63,7 @@ public class GUIController {
 
         for (int i = 0; i < this.waitingQueue.getQueueLength(); i++) {
             Customer customer = this.waitingQueue.getQueue()[i];
-            Button customerButton = createCustomerButton(customer, -1, i, this::handleCustomerAction);
+            Button customerButton = this.createCustomerButton(customer, -1, i, this::handleCustomerAction);
             waitingBox.getChildren().add(customerButton);
         }
 
@@ -79,6 +87,17 @@ public class GUIController {
         customerButton.setOnAction(eventHandler);
 
         return customerButton;
+    }
+
+    protected HBox createSearchResultRow(Customer customer, int queueNo, int customerNo, EventHandler<ActionEvent> eventHandler) {
+        HBox customerContainer = new HBox();
+        customerContainer.setAlignment(Pos.CENTER);
+        customerContainer.setSpacing(12);
+        Button customerButton = this.createCustomerButton(customer, queueNo, customerNo, eventHandler);
+        Label customerLabel = new Label("Queue: " + queueNo + ", Position: " + customerNo);
+        customerContainer.getChildren().addAll(customerButton, customerLabel);
+
+        return customerContainer;
     }
 
     protected void handleCustomerAction(ActionEvent actionEvent) {
@@ -106,5 +125,32 @@ public class GUIController {
         this.firstNameLabel.setText(customer.getFirstName());
         this.lastNameLabel.setText(customer.getLastName());
         this.burgerLabel.setText(String.valueOf(customer.getBurgersRequired()));
+    }
+
+    @FXML
+    protected void handleSearchAction() {
+        this.searchResultContainer.getChildren().clear();
+        String searchTerm = this.searchField.getText();
+        this.searchField.setText("");
+
+        for (int i = 0; i < this.queues.length; i++) {
+            Customer[] foundCustomers = this.queues[i].searchCustomer(searchTerm);
+
+            for (int j = 0; j < foundCustomers.length; j++) {
+                if (foundCustomers[j] != null) {
+                    HBox customerContainer = this.createSearchResultRow(foundCustomers[j], i, j, this::handleCustomerAction);
+                    this.searchResultContainer.getChildren().add(customerContainer);
+                }
+            }
+        }
+
+        Customer[] foundWaitingCustomers = this.waitingQueue.searchCustomer(searchTerm);
+
+        for (int i = 0; i < foundWaitingCustomers.length; i++) {
+            if (foundWaitingCustomers[i] != null) {
+                HBox customerContainer = this.createSearchResultRow(foundWaitingCustomers[i], -1, i, this::handleCustomerAction);
+                this.searchResultContainer.getChildren().add(customerContainer);
+            }
+        }
     }
 }

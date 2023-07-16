@@ -98,6 +98,19 @@ public class WaitingQueue {
         return tempQueue;
     }
 
+    public Customer[] searchCustomer(String searchTerm) {
+        Customer[] localQueue = this.getQueue();
+        Customer[] tempQueue = new Customer[localQueue.length];
+
+        for (int i = 0; i < tempQueue.length; i++) {
+            if (localQueue[i] != null && localQueue[i].getFullName().toUpperCase().contains(searchTerm.toUpperCase())) {
+                tempQueue[i] = localQueue[i];
+            }
+        }
+
+        return tempQueue;
+    }
+
     @Override
     public String toString() {
         StringBuilder state = new StringBuilder(String.format("%s%n%d%n", WAITINGQUEUE_START_MARK, this.getQueueLength()));

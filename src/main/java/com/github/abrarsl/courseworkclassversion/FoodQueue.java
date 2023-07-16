@@ -134,6 +134,18 @@ public class FoodQueue {
         return customer;
     }
 
+    public Customer[] searchCustomer(String searchTerm) {
+        Customer[] tempQueue = new Customer[this.getQueueLength()];
+
+        for (int i = 0; i < tempQueue.length; i++) {
+            if (this.queue[i] != null && this.queue[i].getFullName().toUpperCase().contains(searchTerm.toUpperCase())) {
+                tempQueue[i] = this.queue[i];
+            }
+        }
+
+        return tempQueue;
+    }
+
     @Override
     public String toString() {
         StringBuilder state = new StringBuilder(
