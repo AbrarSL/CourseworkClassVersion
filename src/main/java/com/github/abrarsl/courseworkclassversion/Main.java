@@ -23,8 +23,9 @@ public class Main {
     private static boolean shouldSortCustomerList = true;
 
     public static void main(String[] args) {
-        queues = initQueues(new int[]{2, 3, 5});
-        initGui();
+        queues = initQueues(new int[]{2, 3, 5}); // MUST be called before running program
+        waitingQueue = new WaitingQueue(5); // MUST be set before running program
+        initGui(); // MUST be called before launching GUI
         displayCommands();
 
         while (true) {
@@ -75,7 +76,7 @@ public class Main {
                     break;
                 case "EXT", "999":
                     System.out.println("Exiting...");
-                    deInitGui();
+                    deInitGui(); // Must be called, otherwise FX thread will block exit
                     return;
                 default:
                     System.out.println("Unknown Command!");
@@ -83,32 +84,56 @@ public class Main {
         }
     }
 
+    /**
+     * Expose internal data structure {@link Main#queues}.
+     * @return A {@link FoodQueue}[] reference that can be used to populate a GUI.
+     */
     public static FoodQueue[] getQueues() {
         return queues;
     }
 
+    /**
+     * Expose internal data structure {@link Main#waitingQueue}.
+     * @return A {@link WaitingQueue} reference that can be used to populate a GUI.
+     */
     public static WaitingQueue getWaitingQueue() {
         return waitingQueue;
     }
 
+    /**
+     * Creates a {@link FoodQueue}[] object according to the given layout.
+     * @param queueLayout An array of lengths of each queue. Ensure that the sizes are given in ascending order.
+     * @return A reference to the newly created {@link FoodQueue}[] instance.
+     */
     private static FoodQueue[] initQueues(int[] queueLayout) {
         FoodQueue[] tempQueue = new FoodQueue[queueLayout.length];
-        int totalLength = 0;
 
         for (int i = 0; i < tempQueue.length; i++) {
-            totalLength += queueLayout[i];
             tempQueue[i] = new FoodQueue(queueLayout[i]);
         }
 
-        waitingQueue = new WaitingQueue(totalLength);
         return tempQueue;
     }
 
+    /**
+     * A helper method to show a prompt and get some input from the user.
+     * @param prompt The prompt that will be shown to the user.
+     * @return The input received from the user.
+     */
     private static String inputPrompt(String prompt) {
         System.out.print(prompt);
         return INPUT.nextLine();
     }
 
+    /**
+     * Prompt and get an integer value from the user. If any of the checks fails an exception may be thrown.
+     * @param prompt The prompt that will be shown to the user.
+     * @param start The start of the number range that will be accepted. Inclusive.
+     * @param end The end of the number range that will be accepted. Exclusive.
+     * @return An int that is within the given range.
+     * @throws SelectionOutOfRangeException Thrown when the input is out of the acceptable range.
+     * @throws NumberFormatException Thrown if a non-numeric value is entered.
+     */
     private static int intInputPrompt(String prompt, int start, int end)
             throws SelectionOutOfRangeException, NumberFormatException {
         final int result = Integer.parseInt(inputPrompt(prompt));
@@ -120,6 +145,12 @@ public class Main {
         return result;
     }
 
+    /**
+     * A number of hardcoded validation cases are checked by this methods.
+     * @param input A string that needs to be validated.
+     * @return The validated string.
+     * @throws InputValidationException The reason for the failure is passed in the exception message.
+     */
     private static String validateString(String input) throws InputValidationException {
         if (input.contains(Customer.INFO_DELIMITER)) {
             throw new InputValidationException(String.format(
@@ -143,6 +174,10 @@ public class Main {
         return input;
     }
 
+    /**
+     * Sorts all customers in food queues using bubble sort and sets the result in {@link Main#sortedCustomerList},
+     * {@link Main#shouldSortCustomerList} is set to false after running this method.
+     */
     private static void sortCustomers() {
         int totalCustomersLength = 0;
 
@@ -180,6 +215,10 @@ public class Main {
         shouldSortCustomerList = false;
     }
 
+    /**
+     * An implementation of the bubble sort algorithm.
+     * @param array The array that will be sorted in-place.
+     */
     private static void bubbleSortCustomers(Customer[] array) {
         boolean swapped = true;
 
@@ -197,6 +236,9 @@ public class Main {
         }
     }
 
+    /**
+     * Display all valid commands for the program.
+     */
     private static void displayCommands() {
         displayHeader("Foodies Fave Food Center");
 
@@ -220,6 +262,11 @@ public class Main {
         System.out.println(commands);
     }
 
+    /**
+     * Displays the given text with decoration and padding as defined by
+     * {@link Main#DECOR_CHARACTER} and {@link Main#HORIZONTAL_PADDING}.
+     * @param headerText
+     */
     private static void displayHeader(String headerText) {
         final int headerLength = headerText.length() + HORIZONTAL_PADDING;
         final int titlePaddingLength = (headerLength - headerText.length() - 2) / 2;
@@ -236,6 +283,9 @@ public class Main {
         System.out.println(DECOR_CHARACTER.repeat(headerLength));
     }
 
+    /**
+     * Displays all the queues that can be selected.
+     */
     private static void displayQueueMenu() {
         displayHeader("Queue Selection");
         for (int i = 0; i < queues.length; i++) {
@@ -243,6 +293,11 @@ public class Main {
         }
     }
 
+    /**
+     * Displays the state of all the {@link FoodQueue} objects in the given array as well as
+     * the state of the {@link Main#waitingQueue}.
+     * @param queues
+     */
     private static void displayQueues(FoodQueue[] queues) {
         final String headerText = "Cashiers (Queue View)";
         final int longestQueueLength = queues[2].getQueueLength();
@@ -284,12 +339,18 @@ public class Main {
         System.out.println("X - Occupied, 0 - Not Occupied");
     }
 
+    /**
+     * Display a warning if the {@link FoodQueue#isStockLow} indicates that stock is low.
+     */
     private static void displayStockWarning() {
         if (FoodQueue.isStockLow()) {
             System.out.printf("Low stock level! %d items left!%n", FoodQueue.getItemStock());
         }
     }
 
+    /**
+     * Uses {@link Main#displayQueues} to display {@link FoodQueue} that are not full.
+     */
     private static void viewEmptyQueues() {
         FoodQueue[] availableQueues = new FoodQueue[queues.length];
 
@@ -304,6 +365,14 @@ public class Main {
         displayQueues(availableQueues);
     }
 
+    /**
+     * Try adding a customer to each {@link FoodQueue} object in {@link Main#queues}.
+     * The {@link Main#queues} is initialized with an ascending order of lengths.
+     * This method therefore always tries from the shortest to the longest queue.
+     * @param customer The customer to add to a queue.
+     * @return The number of the queue that the customer was added to. -1 if {@link Main#waitingQueue} was used.
+     * @throws FullQueueException Is thrown only if all queues and the {@link Main#waitingQueue} are all full.
+     */
     private static int tryAddCustomer(Customer customer) throws FullQueueException {
         for (int i = 0; i < queues.length; i++) {
             try {
@@ -318,6 +387,11 @@ public class Main {
         return -1;
     }
 
+    /**
+     * Attempts to add a customer from the {@link Main#waitingQueue} into a {@link FoodQueue}.
+     * Only call this method after removing a customer from any {@link FoodQueue} that is held in {@link Main#queues}.
+     * @throws FullQueueException
+     */
     private static void tryAddCustomerFromWaiting() throws FullQueueException {
         try {
             if (!waitingQueue.isQueueEmpty()) {
@@ -333,6 +407,10 @@ public class Main {
         }
     }
 
+    /**
+     * Prompt the user for customer info and attempt the customer to the queue.
+     * This method will set {@link Main#shouldSortCustomerList} to true.
+     */
     private static void addCustomerToQueue() {
         displayHeader("Add Customer");
 
@@ -367,6 +445,11 @@ public class Main {
         }
     }
 
+    /**
+     * Prompts the user for a position and removes a customer.
+     * This method will set {@link Main#shouldSortCustomerList} to true.
+     * This method also calls {@link Main#tryAddCustomerFromWaiting()}.
+     */
     private static void removeCustomerFromQueue() {
         displayHeader("Remove Customer");
         displayQueueMenu();
@@ -404,6 +487,12 @@ public class Main {
         }
     }
 
+    /**
+     * Removes a customer from the selected queue if there is enough stock to serve them.
+     * This method will call {@link FoodQueue#setItemStock(int)}.
+     * This method will set {@link Main#shouldSortCustomerList} to true.
+     * This method also calls {@link Main#tryAddCustomerFromWaiting()}.
+     */
     private static void removeServedCustomer() {
         displayHeader("Remove Served Customer");
         displayQueueMenu();
@@ -437,6 +526,11 @@ public class Main {
         }
     }
 
+    /**
+     * Show all the customers stored in {@link Main#sortedCustomerList}.
+     * if {@link Main#shouldSortCustomerList} is true this method will call {@link Main#sortCustomers()}
+     * before displaying anything.
+     */
     private static void viewSortedCustomers() {
         if (shouldSortCustomerList) {
             sortCustomers();
@@ -453,6 +547,9 @@ public class Main {
         }
     }
 
+    /**
+     * Stores program data as text at {@link Main#FILE_PATH}.
+     */
     private static void storeProgramData() {
         displayHeader("Store Program Data");
 
@@ -479,6 +576,10 @@ public class Main {
         }
     }
 
+    /**
+     * Load data from a file at {@link Main#FILE_PATH}.
+     * May mutate {@link Main#queues} and {@link Main#waitingQueue}.
+     */
     private static void loadProgramData() {
         displayHeader("Load Program Data");
 
@@ -602,11 +703,17 @@ public class Main {
         }
     }
 
+    /**
+     * View the burger stock that remains in the {@link FoodQueue} class.
+     */
     private static void viewBurgerStock() {
         displayHeader("Burger Stock");
         System.out.printf("Items: %d%n", FoodQueue.getItemStock());
     }
 
+    /**
+     * Attempt to edit the stock of all the {@link FoodQueue}.
+     */
     private static void addToBurgerStock() {
         displayHeader("Add Burger Stock");
 
@@ -625,6 +732,9 @@ public class Main {
         }
     }
 
+    /**
+     * View income from each {@link FoodQueue}.
+     */
     private static void viewQueueIncome() {
         displayHeader("View Queue Income");
         displayQueueMenu();
@@ -642,14 +752,26 @@ public class Main {
         }
     }
 
+    /**
+     * Initialize the JavaFX platform.
+     * This needs to be called before any other GUI code is run.
+     */
     private static void initGui() {
         Platform.startup(() -> Platform.setImplicitExit(false));
     }
 
+    /**
+     * Shutdown the internal FX thread and allow the program to exit.
+     */
     private static void deInitGui() {
         Platform.exit();
     }
 
+    /**
+     * Create a stage and load the viewer application.
+     * This method will run actual widget creation on the FX application thread.
+     * This method does not block.
+     */
     private static void startGui() {
         Platform.runLater(() -> {
             try {
