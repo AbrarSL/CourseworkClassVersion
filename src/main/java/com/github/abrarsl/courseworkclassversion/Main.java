@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    private static final Scanner input = new Scanner(System.in);
+    private static final Scanner INPUT = new Scanner(System.in);
     private static final String DECOR_CHARACTER = "*";
     private static final String FOODQUEUE_START_MARK = "FOODQUEUE_START";
     private static final int HORIZONTAL_PADDING = 10;
@@ -92,10 +92,6 @@ public class Main {
         return waitingQueue;
     }
 
-    public static Customer[] getSortedCustomerList() {
-        return sortedCustomerList;
-    }
-
     private static FoodQueue[] initQueues(int[] queueLayout) {
         FoodQueue[] tempQueue = new FoodQueue[queueLayout.length];
         int totalLength = 0;
@@ -111,7 +107,7 @@ public class Main {
 
     private static String inputPrompt(String prompt) {
         System.out.print(prompt);
-        return input.nextLine();
+        return INPUT.nextLine();
     }
 
     private static int intInputPrompt(String prompt, int start, int end)
@@ -254,6 +250,14 @@ public class Main {
 
             System.out.println();
         }
+
+        StringBuilder waitingQueueString = new StringBuilder("Waiting Queue:");
+
+        for (Customer customer : waitingQueue.getQueue()) {
+            waitingQueueString.append(customer == null ? " O" : " X");
+        }
+
+        System.out.println(waitingQueueString.toString());
 
         System.out.println("X - Occupied, 0 - Not Occupied");
     }
