@@ -10,8 +10,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<SplitPane dividerPositions="0.3" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/20.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.abrarsl.courseworkclassversion.GUIController">
+<SplitPane dividerPositions="0.2" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/20.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.abrarsl.courseworkclassversion.GUIController">
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="323.0">
          <children>
@@ -20,34 +21,20 @@
                   <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
                </padding>
                <children>
-                  <Label alignment="CENTER" text="Info" />
-                  <HBox alignment="CENTER_LEFT">
-                     <children>
-                        <Label text="First Name: " />
-                        <Label fx:id="firstNameLabel" />
-                     </children>
-                  </HBox>
-                  <HBox alignment="CENTER_LEFT">
-                     <children>
-                        <Label text="Last Name: " />
-                        <Label fx:id="lastNameLabel" />
-                     </children>
-                  </HBox>
-                  <HBox alignment="CENTER_LEFT">
-                     <children>
-                        <Label text="Burgers Needed: " />
-                        <Label fx:id="burgerLabel" />
-                     </children>
-                  </HBox>
-                  <Separator prefWidth="200.0" />
-                  <Label alignment="CENTER" text="Controls" />
+                  <Label alignment="CENTER" text="Controls">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font></Label>
                   <Button mnemonicParsing="false" onAction="#initialize" text="Reload Data" />
                   <Separator prefWidth="200.0" />
-                  <TextField fx:id="searchField" promptText="Search Queues" />
+                  <TextField fx:id="searchField" onAction="#handleSearchAction" promptText="Search Queues" />
                   <Button mnemonicParsing="false" onAction="#handleSearchAction" text="Search" />
                   <Separator prefWidth="200.0" />
-                  <Label text="Search Results" />
-                  <ScrollPane hbarPolicy="NEVER">
+                  <Label text="Search Results">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font></Label>
+                  <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
                      <content>
                         <VBox fx:id="searchResultContainer" alignment="TOP_CENTER" spacing="12.0">
                            <padding>
@@ -67,7 +54,10 @@
                   <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
                </padding>
                <children>
-                  <Label alignment="CENTER" text="Queues" />
+                  <Label alignment="CENTER" text="Queues">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font></Label>
                   <HBox fx:id="queueContainer" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="12.0">
                      <padding>
                         <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />

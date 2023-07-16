@@ -1,16 +1,17 @@
 package com.github.abrarsl.courseworkclassversion;
 
 import com.github.abrarsl.courseworkclassversion.exceptions.SelectionOutOfRangeException;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 
 public class GUIController {
     private FoodQueue[] queues;
@@ -18,14 +19,6 @@ public class GUIController {
 
     @FXML
     protected HBox queueContainer;
-
-    @FXML
-    protected Label firstNameLabel;
-    @FXML
-    protected Label lastNameLabel;
-    @FXML
-    protected Label burgerLabel;
-
     @FXML
     protected TextField searchField;
     @FXML
@@ -48,8 +41,8 @@ public class GUIController {
             try {
                 for (int j = 0; j < this.queues[i].getQueueLength(); j++) {
                     Customer customer = this.queues[i].getCustomer(j);
-                    Button customerButton = this.createCustomerButton(customer, i, j, this::handleCustomerAction);
-                    queueBox.getChildren().add(customerButton);
+                    Label customerLabel = this.createCustomerLabel(customer, i, j, this::handleCustomerAction);
+                    queueBox.getChildren().add(customerLabel);
                 }
             } catch (SelectionOutOfRangeException ignored) {
             }
@@ -63,8 +56,8 @@ public class GUIController {
 
         for (int i = 0; i < this.waitingQueue.getQueueLength(); i++) {
             Customer customer = this.waitingQueue.getQueue()[i];
-            Button customerButton = this.createCustomerButton(customer, -1, i, this::handleCustomerAction);
-            waitingBox.getChildren().add(customerButton);
+            Label customerLabel = this.createCustomerLabel(customer, -1, i, this::handleCustomerAction);
+            waitingBox.getChildren().add(customerLabel);
         }
 
         this.queueContainer.getChildren().add(waitingBox);
@@ -72,7 +65,8 @@ public class GUIController {
 
     protected VBox createQueueBox(String title) {
         VBox queueBox = new VBox();
-        queueBox.getChildren().add(new Label(title));
+        Label queueLabel = new Label(title);
+        queueBox.getChildren().add(queueLabel);
         queueBox.setPadding(new Insets(12, 12, 12, 12));
         queueBox.setSpacing(12);
         queueBox.setAlignment(Pos.TOP_CENTER);
@@ -80,29 +74,24 @@ public class GUIController {
         return queueBox;
     }
 
-    protected Button createCustomerButton(Customer customer, int queueNo, int customerNo, EventHandler<ActionEvent> eventHandler) {
-        Button customerButton = new Button(customer == null ? "X" : "O");
-        customerButton.setId(String.format("%d%s%d", queueNo, Customer.INFO_DELIMITER, customerNo));
-        customerButton.setDisable(customer == null);
-        customerButton.setOnAction(eventHandler);
+    protected Label createCustomerLabel(Customer customer, int queueNo, int customerNo, EventHandler<MouseEvent> eventHandler) {
+        Label customerLabel = new Label(String.format(
+                "%d. %s",
+                (queueNo < 0 ? this.queues.length + 1 : queueNo),
+                (customer == null ? "X" : customer.getFullName())
+        ));
+        customerLabel.setId(String.format("%d%s%d", queueNo, Customer.INFO_DELIMITER, customerNo));
+        customerLabel.getStyleClass().addAll("customer-label", customer == null ? "vacant-label" : "");
+        customerLabel.setDisable(customer == null);
+        customerLabel.setTextAlignment(TextAlignment.CENTER);
+        customerLabel.setOnMouseClicked(eventHandler);
 
-        return customerButton;
+        return customerLabel;
     }
 
-    protected HBox createSearchResultRow(Customer customer, int queueNo, int customerNo, EventHandler<ActionEvent> eventHandler) {
-        HBox customerContainer = new HBox();
-        customerContainer.setAlignment(Pos.CENTER);
-        customerContainer.setSpacing(12);
-        Button customerButton = this.createCustomerButton(customer, queueNo, customerNo, eventHandler);
-        Label customerLabel = new Label("Queue: " + queueNo + ", Position: " + customerNo);
-        customerContainer.getChildren().addAll(customerButton, customerLabel);
-
-        return customerContainer;
-    }
-
-    protected void handleCustomerAction(ActionEvent actionEvent) {
-        Button customerButton = (Button) actionEvent.getSource();
-        String[] idPayload = customerButton.getId().split(Customer.INFO_DELIMITER);
+    protected void handleCustomerAction(MouseEvent mouseEvent) {
+        Label customerLabel = (Label) mouseEvent.getSource();
+        String[] idPayload = customerLabel.getId().split(Customer.INFO_DELIMITER);
         int[] queueIndex = new int[idPayload.length];
 
         for (int i = 0; i < queueIndex.length; i++) {
@@ -111,20 +100,27 @@ public class GUIController {
 
         if (queueIndex[0] < 0) {
             Customer customer = this.waitingQueue.getQueue()[queueIndex[1]];
-            this.setCustomerInfo(customer);
+            this.showCustomerInfo(customer, queueIndex[0], queueIndex[1]);
         } else {
             try {
                 Customer customer = this.queues[queueIndex[0]].getCustomer(queueIndex[1]);
-                this.setCustomerInfo(customer);
+                this.showCustomerInfo(customer, queueIndex[0], queueIndex[1]);
             } catch (SelectionOutOfRangeException ignored) {
             }
         }
     }
 
-    protected void setCustomerInfo(Customer customer) {
-        this.firstNameLabel.setText(customer.getFirstName());
-        this.lastNameLabel.setText(customer.getLastName());
-        this.burgerLabel.setText(String.valueOf(customer.getBurgersRequired()));
+    protected void showCustomerInfo(Customer customer, int queueNo, int positionNo) {
+        String customerInfo = String.format(
+                "First Name: %s%nLast Name: %s%nBurgers Needed: %s%nQueue: %s%nPosition: %s",
+                customer.getFirstName(),
+                customer.getLastName(),
+                customer.getBurgersRequired(),
+                queueNo,
+                positionNo
+        );
+        Alert infoAlert = new Alert(Alert.AlertType.INFORMATION, customerInfo);
+        infoAlert.show();
     }
 
     @FXML
@@ -138,8 +134,8 @@ public class GUIController {
 
             for (int j = 0; j < foundCustomers.length; j++) {
                 if (foundCustomers[j] != null) {
-                    HBox customerContainer = this.createSearchResultRow(foundCustomers[j], i, j, this::handleCustomerAction);
-                    this.searchResultContainer.getChildren().add(customerContainer);
+                    Label customerLabel = this.createCustomerLabel(foundCustomers[j], i, j, this::handleCustomerAction);
+                    this.searchResultContainer.getChildren().add(customerLabel);
                 }
             }
         }
@@ -148,8 +144,8 @@ public class GUIController {
 
         for (int i = 0; i < foundWaitingCustomers.length; i++) {
             if (foundWaitingCustomers[i] != null) {
-                HBox customerContainer = this.createSearchResultRow(foundWaitingCustomers[i], -1, i, this::handleCustomerAction);
-                this.searchResultContainer.getChildren().add(customerContainer);
+                Label customerLabel = this.createCustomerLabel(foundWaitingCustomers[i], -1, i, this::handleCustomerAction);
+                this.searchResultContainer.getChildren().add(customerLabel);
             }
         }
     }
