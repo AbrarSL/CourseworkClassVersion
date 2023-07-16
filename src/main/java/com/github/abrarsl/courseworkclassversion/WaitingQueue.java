@@ -76,18 +76,16 @@ public class WaitingQueue {
         return this.queue.length;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder state = new StringBuilder(String.format("%s%n%d%n", WAITINGQUEUE_START_MARK, this.getQueueLength()));
-
-        int customersSaved = 0;
-
+    public Customer[] getQueue() {
         int front = this.frontIndex;
         int rear = this.rearIndex;
 
+        Customer[] tempQueue = new Customer[this.getQueueLength()];
+        int queueIndex = 0;
+
         while (front != -1) {
-            state.append(this.queue[front]);
-            customersSaved++;
+            tempQueue[queueIndex] = this.queue[front];
+            queueIndex++;
 
             if (front == rear) {
                 front = -1;
@@ -97,9 +95,23 @@ public class WaitingQueue {
             }
         }
 
-        if (customersSaved < this.getQueueLength()) {
-            state.append(String.format("null%n").repeat(this.getQueueLength() - customersSaved));
+        return tempQueue;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder state = new StringBuilder(String.format("%s%n%d%n", WAITINGQUEUE_START_MARK, this.getQueueLength()));
+
+        int customersSaved = 0;
+
+        for (Customer customer : this.getQueue()) {
+            if (customer != null) {
+                state.append(customer);
+                customersSaved++;
+            }
         }
+
+        state.append(String.format("null%n".repeat(this.getQueueLength() - customersSaved)));
 
         return state.toString();
     }

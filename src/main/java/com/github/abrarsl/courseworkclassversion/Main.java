@@ -1,6 +1,10 @@
 package com.github.abrarsl.courseworkclassversion;
 
 import com.github.abrarsl.courseworkclassversion.exceptions.*;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,6 +25,7 @@ public class Main {
 
     public static void main(String[] args) {
         queues = initQueues(new int[]{2, 3, 5});
+        initGui();
         displayCommands();
 
         while (true) {
@@ -66,13 +71,29 @@ public class Main {
                 case "IFQ", "110":
                     viewQueueIncome();
                     break;
+                case "GUI", "112":
+                    startGui();
+                    break;
                 case "EXT", "999":
                     System.out.println("Exiting...");
+                    deInitGui();
                     return;
                 default:
                     System.out.println("Unknown Command!");
             }
         }
+    }
+
+    public static FoodQueue[] getQueues() {
+        return queues;
+    }
+
+    public static WaitingQueue getWaitingQueue() {
+        return waitingQueue;
+    }
+
+    public static Customer[] getSortedCustomerList() {
+        return sortedCustomerList;
     }
 
     private static FoodQueue[] initQueues(int[] queueLayout) {
@@ -174,6 +195,7 @@ public class Main {
                 108 or STK: View remaining burger stock.
                 109 or AFS: Add burgers to stock.
                 110 or IFQ: View queue income information.
+                112 or GUI: Start GUI.
                 999 or EXT: Exit the program.
                 """;
 
@@ -232,6 +254,8 @@ public class Main {
 
             System.out.println();
         }
+
+        System.out.println("X - Occupied, 0 - Not Occupied");
     }
 
     private static void displayStockWarning() {
@@ -279,7 +303,8 @@ public class Main {
                         queueNumber
                 );
             }
-        } catch (CustomerNotFoundException ignored) {}
+        } catch (CustomerNotFoundException ignored) {
+        }
     }
 
     private static void addCustomerToQueue() {
@@ -346,7 +371,8 @@ public class Main {
             System.out.println("Incorrect queue number! " + exception.getMessage());
         } catch (CustomerNotFoundException exception) {
             System.out.println(exception.getMessage());
-        } catch (FullQueueException ignored) {}
+        } catch (FullQueueException ignored) {
+        }
     }
 
     private static void removeServedCustomer() {
@@ -378,7 +404,8 @@ public class Main {
             System.out.printf("Insufficient stock level! Customer requires %s items!%n", exception.getMessage());
         } catch (CustomerNotFoundException exception) {
             System.out.println(exception.getMessage());
-        } catch (FullQueueException ignored) {}
+        } catch (FullQueueException ignored) {
+        }
     }
 
     private static void viewSortedCustomers() {
@@ -588,5 +615,29 @@ public class Main {
             System.out.println("Queue number is out of range!");
             System.out.println(exception.getMessage());
         }
+    }
+
+    private static void initGui() {
+        Platform.startup(() -> Platform.setImplicitExit(false));
+    }
+
+    private static void deInitGui() {
+        Platform.exit();
+    }
+
+    private static void startGui() {
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("queue-viewer.fxml"));
+
+                Scene primaryScene = new Scene(fxmlLoader.load());
+                Stage primaryStage = new Stage();
+
+                primaryStage.setScene(primaryScene);
+                primaryStage.setTitle("Queue Viewer");
+                primaryStage.show();
+            } catch (IOException ignored) {
+            }
+        });
     }
 }
