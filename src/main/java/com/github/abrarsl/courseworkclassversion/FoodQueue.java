@@ -45,14 +45,6 @@ public class FoodQueue {
         return itemStock;
     }
 
-    public static boolean isStockLow() {
-        return getItemStock() <= STOCK_WARN_THRESHOLD;
-    }
-
-    public boolean isQueueFull() {
-        return this.queue[this.getQueueLength() - 1] != null;
-    }
-
     public static void setItemStock(int newItemStock) throws StockOutOfRangeException {
         if (newItemStock > MAX_STOCK || newItemStock < MIN_STOCK) {
             throw new StockOutOfRangeException(
@@ -65,6 +57,14 @@ public class FoodQueue {
         }
 
         FoodQueue.itemStock = newItemStock;
+    }
+
+    public static boolean isStockLow() {
+        return getItemStock() <= STOCK_WARN_THRESHOLD;
+    }
+
+    public boolean isQueueFull() {
+        return this.endIndex >= this.getQueueLength();
     }
 
     private void validateSelection(int selection) throws SelectionOutOfRangeException {
@@ -94,7 +94,7 @@ public class FoodQueue {
     }
 
     public void addCustomer(Customer customer) throws FullQueueException {
-        if (this.endIndex >= this.queue.length) {
+        if (this.isQueueFull()) {
             throw new FullQueueException();
         }
 

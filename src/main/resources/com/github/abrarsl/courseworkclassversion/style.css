@@ -1,0 +1,12 @@
+.customer-label {
+    -fx-background-color: #80f0a0;
+    -fx-text-fill: #080808;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-pref-width: 180px;
+    -fx-padding: 6px;
+}
+
+.vacant-label {
+    -fx-background-color: #f080a0;
+}

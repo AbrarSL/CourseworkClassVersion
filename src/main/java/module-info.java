@@ -5,4 +5,5 @@ module com.github.abrarsl.courseworkclassversion {
                             
     opens com.github.abrarsl.courseworkclassversion to javafx.fxml;
     exports com.github.abrarsl.courseworkclassversion;
+    exports com.github.abrarsl.courseworkclassversion.exceptions;
 }
