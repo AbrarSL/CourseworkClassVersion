@@ -121,6 +121,29 @@ public class Main {
         return result;
     }
 
+    private static String validateString(String input) throws InputValidationException {
+        if (input.contains(Customer.INFO_DELIMITER)) {
+            throw new InputValidationException(String.format(
+                    "'%s' delimiter character detected!",
+                    Customer.INFO_DELIMITER
+            ));
+        }
+
+        if (input.isEmpty()) {
+            throw new InputValidationException("Empty string detected!");
+        }
+
+        if (input.equals("null")) {
+            throw new InputValidationException("'null' detected!");
+        }
+
+        if (input.contains(String.format("%n"))) {
+            throw new InputValidationException("Newline character detected!");
+        }
+
+        return input;
+    }
+
     private static void sortCustomers() {
         int totalCustomersLength = 0;
 
@@ -315,8 +338,8 @@ public class Main {
         displayHeader("Add Customer");
 
         try {
-            String customerFirstName = inputPrompt("Enter the customer's first name: ");
-            String customerLastName = inputPrompt("Enter the customer's last name: ");
+            String customerFirstName = validateString(inputPrompt("Enter the customer's first name: "));
+            String customerLastName = validateString(inputPrompt("Enter the customer's last name: "));
             int customerBurgerNumber = Integer.parseInt(inputPrompt("Enter the number of burgers needed: "));
 
             if (customerBurgerNumber < 0) {
@@ -339,6 +362,9 @@ public class Main {
             System.out.println("Invalid Input! Enter a positive number!");
         } catch (FullQueueException exception) {
             System.out.println("All queues full! Customer could not be added!");
+        } catch (InputValidationException exception) {
+            System.out.println("Input validation failed!");
+            System.out.println("Reason: " + exception.getMessage());
         }
     }
 
