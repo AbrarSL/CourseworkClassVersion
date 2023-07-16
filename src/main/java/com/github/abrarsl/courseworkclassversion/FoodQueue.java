@@ -8,6 +8,7 @@ public class FoodQueue {
     private static final int MIN_STOCK = 0;
     private static final int MAX_STOCK = 50;
     private static final int STOCK_WARN_THRESHOLD = 10;
+    public static final String FOODQUEUE_START_MARK = "FOODQUEUE_START";
     private int queueIncome;
     private int endIndex;
     private static int itemStock = 0;
@@ -150,7 +151,8 @@ public class FoodQueue {
     public String toString() {
         StringBuilder state = new StringBuilder(
                 String.format(
-                        "%d%n%d%n",
+                        "%s%n%d%n%d%n",
+                        FOODQUEUE_START_MARK,
                         this.getQueueLength(),
                         this.getQueueIncome()
                 )

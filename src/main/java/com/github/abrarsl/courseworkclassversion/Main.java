@@ -15,7 +15,6 @@ import java.util.Scanner;
 public class Main {
     private static final Scanner INPUT = new Scanner(System.in);
     private static final String DECOR_CHARACTER = "*";
-    private static final String FOODQUEUE_START_MARK = "FOODQUEUE_START";
     private static final int HORIZONTAL_PADDING = 10;
     private static final String FILE_PATH = "./programState.txt";
     private static FoodQueue[] queues;
@@ -467,11 +466,7 @@ public class Main {
             ));
 
             for (FoodQueue queue : queues) {
-                fileWriter.write(String.format(
-                        "%s%n%s",
-                        FOODQUEUE_START_MARK,
-                        queue
-                ));
+                fileWriter.write(queue.toString());
             }
 
             fileWriter.write(waitingQueue.toString());
@@ -511,7 +506,7 @@ public class Main {
 
                 String fileLine = fileReader.nextLine();
 
-                if (!fileLine.equals(FOODQUEUE_START_MARK)) {
+                if (!fileLine.equals(FoodQueue.FOODQUEUE_START_MARK)) {
                     throw new InvalidFileDataException("FoodQueue data marker not found!");
                 }
 
