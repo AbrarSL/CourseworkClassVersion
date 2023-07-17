@@ -136,12 +136,12 @@ public class TUIController {
 
         boolean swapped = true;
 
-        while (swapped) {
+        while (swapped) { // Bubble sort
             swapped = false;
 
             for (int i = 0; i < insertionOrder.length - 1; i++) {
                 if (foodQueues[insertionOrder[i]].getQueueLength() >
-                        foodQueues[insertionOrder[i + 1]].getQueueLength()) {
+                        foodQueues[insertionOrder[i + 1]].getQueueLength()) { // Compare length of the FoodQueues
                     int temp = insertionOrder[i];
                     insertionOrder[i] = insertionOrder[i + 1];
                     insertionOrder[i + 1] = temp;
@@ -208,7 +208,7 @@ public class TUIController {
             throw new InputValidationException("'null' detected!");
         }
 
-        if (input.contains(String.format("%n"))) {
+        if (input.contains(String.format("%n"))) { // String.format() is used to get the platform specific character
             throw new InputValidationException("Newline character detected!");
         }
 
@@ -216,48 +216,50 @@ public class TUIController {
     }
 
     /**
-     * Sorts all customers in food queues using bubble sort and sets the result in {@link TUIController#sortedCustomerList},
-     * {@link TUIController#shouldSortCustomerList} is set to false after running this method.
+     * Sorts all customers in food queues using bubble sort and sets the result in
+     * {@link TUIController#sortedCustomerList}, {@link TUIController#shouldSortCustomerList} is set to
+     * false after running this method.
      */
     private static void sortCustomers() {
         int totalCustomersLength = 0;
 
         for (FoodQueue queue : queues) {
-            totalCustomersLength += queue.getQueueLength();
+            totalCustomersLength += queue.getQueueLength(); // Total length of all FoodQueues
         }
 
         Customer[] tempList = new Customer[totalCustomersLength];
-        int index = 0;
+        int customersAdded = 0; // Track total valid customers added
 
         for (FoodQueue queue : queues) {
             for (int i = 0; i < queue.getQueueLength(); i++) {
                 try {
                     if (queue.getCustomer(i) == null) {
                         break;
+                        // FoodQueues will keep the internal queue free of internal null holes allowing an early break
                     }
 
-                    tempList[index++] = queue.getCustomer(i);
+                    tempList[customersAdded++] = queue.getCustomer(i);
                 } catch (Exception ignored) {
                 }
             }
         }
 
-        if (index < totalCustomersLength) {
-            sortedCustomerList = new Customer[index];
+        if (customersAdded < totalCustomersLength) { // Optimization to avoid a copy if all the customers were valid
+            sortedCustomerList = new Customer[customersAdded];
 
-            for (int i = 0; i < sortedCustomerList.length; i++) {
+            for (int i = 0; i < sortedCustomerList.length; i++) { // Copy array data
                 sortedCustomerList[i] = tempList[i];
             }
         } else {
             sortedCustomerList = tempList;
         }
 
-        bubbleSortCustomers(sortedCustomerList);
+        bubbleSortCustomers(sortedCustomerList); // Sort the assembled array
         shouldSortCustomerList = false;
     }
 
     /**
-     * An implementation of the bubble sort algorithm.
+     * An implementation of the bubble sort algorithm for {@link Customer} arrays.
      *
      * @param array The array that will be sorted in-place.
      */
@@ -284,7 +286,7 @@ public class TUIController {
     private static void displayCommands() {
         displayHeader("Foodies Fave Food Center");
 
-        final String commands = """
+        String commands = """
                 000 or H: View help menu.
                 100 or VFQ: View all queues.
                 101 or VEQ: View all empty queues.
@@ -374,7 +376,7 @@ public class TUIController {
 
         StringBuilder waitingQueueString = new StringBuilder("Waiting Queue:");
 
-        for (Customer customer : waitingQueue.getQueue()) {
+        for (Customer customer : waitingQueue.getQueue()) { // Fairly expensive operation. Disable?
             waitingQueueString.append(customer == null ? " O" : " X");
         }
 
@@ -398,7 +400,7 @@ public class TUIController {
     private static void viewEmptyQueues() {
         FoodQueue[] availableQueues = new FoodQueue[queues.length];
 
-        for (int i = 0; i < queues.length; i++) {
+        for (int i = 0; i < queues.length; i++) { // Replace full queues with zero-sized queues
             if (queues[i].isQueueFull()) {
                 availableQueues[i] = new FoodQueue(0);
             } else {
@@ -419,7 +421,7 @@ public class TUIController {
      * @throws FullQueueException Is thrown only if all queues and the {@link TUIController#waitingQueue} are full.
      */
     private static int tryAddCustomer(Customer customer) throws FullQueueException {
-        for (int i : queuesInsertionOrder) {
+        for (int i : queuesInsertionOrder) { // Use the generated insertion order
             try {
                 queues[i].addCustomer(customer);
                 return i;
@@ -440,21 +442,20 @@ public class TUIController {
      */
     private static void tryAddCustomerFromWaiting() throws FullQueueException {
         try {
-            if (!waitingQueue.isQueueEmpty()) {
-                Customer waitingCustomer = waitingQueue.dequeue();
-                int queueNumber = tryAddCustomer(waitingCustomer);
-                System.out.printf(
-                        "Customer %s from waiting queue added to queue %d!%n",
-                        waitingCustomer.getFullName(),
-                        queueNumber
-                );
-            }
-        } catch (CustomerNotFoundException ignored) {
+            Customer waitingCustomer = waitingQueue.dequeue();
+            int queueNumber = tryAddCustomer(waitingCustomer);
+            System.out.printf(
+                    "Customer %s from waiting queue added to queue %d!%n",
+                    waitingCustomer.getFullName(),
+                    queueNumber
+            );
+        } catch (CustomerNotFoundException exception) {
+            System.out.println("Waiting queue is empty!");
         }
     }
 
     /**
-     * Prompt the user for customer info and attempt the customer to the queue.
+     * Prompt the user for customer info and attempt to add the customer to the queue.
      * This method will set {@link TUIController#shouldSortCustomerList} to true.
      */
     private static void addCustomerToQueue() {
@@ -465,7 +466,8 @@ public class TUIController {
             String customerLastName = validateString(inputPrompt("Enter the customer's last name: "));
             int customerBurgerNumber = Integer.parseInt(inputPrompt("Enter the number of burgers needed: "));
 
-            if (customerBurgerNumber < 0) {
+            // Ensure customer order can be met
+            if (customerBurgerNumber < 0 || customerBurgerNumber > FoodQueue.MAX_STOCK) {
                 throw new NumberFormatException();
             }
 
@@ -483,6 +485,7 @@ public class TUIController {
             System.out.printf("Customer %s, added to %s!%n", customer.getFullName(), queueName);
         } catch (NumberFormatException exception) {
             System.out.println("Invalid Input! Enter a positive number!");
+            System.out.printf("Range is %d to %d.%n", 0, FoodQueue.MAX_STOCK);
         } catch (FullQueueException exception) {
             System.out.println("All queues full! Customer could not be added!");
         } catch (InputValidationException exception) {
@@ -578,7 +581,7 @@ public class TUIController {
      * before displaying anything.
      */
     private static void viewSortedCustomers() {
-        if (shouldSortCustomerList) {
+        if (shouldSortCustomerList) { // Check if sorting is needed
             sortCustomers();
         }
 
@@ -602,16 +605,19 @@ public class TUIController {
         System.out.printf("Saving data to file: %s%n", FILE_PATH);
 
         try (FileWriter fileWriter = new FileWriter(FILE_PATH)) {
+            // Store stock info
             fileWriter.write(String.format(
                     "%d%n%d%n",
                     FoodQueue.getItemStock(),
                     queues.length
             ));
 
+            // Store FoodQueues
             for (FoodQueue queue : queues) {
                 fileWriter.write(queue.toString());
             }
 
+            // Store WaitingQueue
             fileWriter.write(waitingQueue.toString());
 
             fileWriter.flush();
@@ -632,12 +638,14 @@ public class TUIController {
         System.out.printf("Loading data from file: %s%n", FILE_PATH);
 
         try (Scanner fileReader = new Scanner(new File(FILE_PATH))) {
+            // Check for stock data
             if (!fileReader.hasNextInt()) {
                 throw new InvalidFileDataException("Stock data not found!");
             }
 
             final int newFoodStock = Integer.parseInt(fileReader.nextLine());
 
+            // Check for queue length
             if (!fileReader.hasNextInt()) {
                 throw new InvalidFileDataException("Number of queues not found!");
             }
@@ -646,6 +654,7 @@ public class TUIController {
 
             final FoodQueue[] loadedQueues = new FoodQueue[numberOfQueues];
 
+            // Load FoodQueue data
             for (int i = 0; i < loadedQueues.length; i++) {
                 if (!fileReader.hasNextLine()) {
                     throw new InvalidFileDataException("FoodQueue information not found!");
@@ -671,6 +680,7 @@ public class TUIController {
 
                 final Customer[] customers = new Customer[queueLength];
 
+                // Load Customer data
                 for (int j = 0; j < customers.length; j++) {
                     if (!fileReader.hasNextLine()) {
                         throw new InvalidFileDataException("FoodQueue data ended unexpectedly!");
@@ -710,6 +720,7 @@ public class TUIController {
 
             Customer[] loadedWaitingQueue = new Customer[waitingQueueLength];
 
+            // Load WaitingQueue data
             for (int j = 0; j < loadedWaitingQueue.length; j++) {
                 if (!fileReader.hasNextLine()) {
                     throw new InvalidFileDataException("Waiting queue data ended unexpectedly!");
@@ -717,6 +728,7 @@ public class TUIController {
 
                 String customerData = fileReader.nextLine();
 
+                // Parse Customer data
                 if (customerData.equals("null")) {
                     loadedWaitingQueue[j] = null;
                 } else {
@@ -732,6 +744,7 @@ public class TUIController {
                 }
             }
 
+            // Load data into memory
             FoodQueue.setItemStock(newFoodStock);
             queues = loadedQueues;
             queuesInsertionOrder = genQueuesInsertionOrder(queues);

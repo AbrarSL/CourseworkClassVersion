@@ -6,7 +6,7 @@ public class FoodQueue {
     private final Customer[] queue;
     private static final int ITEM_PRICE = 650;
     private static final int MIN_STOCK = 0;
-    private static final int MAX_STOCK = 50;
+    public static final int MAX_STOCK = 50;
     private static final int STOCK_WARN_THRESHOLD = 10;
     public static final String FOODQUEUE_START_MARK = "FOODQUEUE_START";
     private int queueIncome;
