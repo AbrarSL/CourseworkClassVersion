@@ -36,7 +36,7 @@ public class FoodQueue {
         this.queueIncome = income;
         this.endIndex = this.queue.length;
 
-        for (int i = 0; i < this.queue.length; i++) {
+        for (int i = 0; i < this.queue.length; i++) { // Linear search for the end of the queue.
             if (this.queue[i] == null) {
                 this.endIndex = i;
                 break;
@@ -188,12 +188,12 @@ public class FoodQueue {
 
         int newFoodStock = itemStock - customer.getBurgersRequired();
 
-        if (newFoodStock < MIN_STOCK) {
+        if (newFoodStock < MIN_STOCK) { // Ensure there is enough stock to serve customer
             throw new InsufficientStockException(String.valueOf(customer.getBurgersRequired()));
         }
 
         itemStock = newFoodStock;
-        this.queueIncome += ITEM_PRICE * customer.getBurgersRequired();
+        this.queueIncome += ITEM_PRICE * customer.getBurgersRequired(); // Update queue income
         this.shiftLeftQueue(queuePosition);
 
         return customer;
