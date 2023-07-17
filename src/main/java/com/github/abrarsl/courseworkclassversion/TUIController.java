@@ -12,18 +12,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class Main {
+public class TUIController {
     private static final Scanner INPUT = new Scanner(System.in);
     private static final String DECOR_CHARACTER = "*";
     private static final int HORIZONTAL_PADDING = 10;
     private static final String FILE_PATH = "./programState.txt";
     private static FoodQueue[] queues;
+    private static int[] queuesInsertionOrder;
     private static WaitingQueue waitingQueue;
     private static Customer[] sortedCustomerList;
     private static boolean shouldSortCustomerList = true;
 
     public static void main(String[] args) {
-        queues = initQueues(new int[]{2, 3, 5}); // MUST be called before running program
+        queues = genQueues(new int[]{7, 5, 2}); // MUST be called before running program
+        queuesInsertionOrder = genQueuesInsertionOrder(queues); // MUST be called before running the program
         waitingQueue = new WaitingQueue(5); // MUST be set before running program
         initGui(); // MUST be called before launching GUI
         displayCommands();
@@ -85,7 +87,8 @@ public class Main {
     }
 
     /**
-     * Expose internal data structure {@link Main#queues}.
+     * Expose internal data structure {@link TUIController#queues}.
+     *
      * @return A {@link FoodQueue}[] reference that can be used to populate a GUI.
      */
     public static FoodQueue[] getQueues() {
@@ -93,7 +96,8 @@ public class Main {
     }
 
     /**
-     * Expose internal data structure {@link Main#waitingQueue}.
+     * Expose internal data structure {@link TUIController#waitingQueue}.
+     *
      * @return A {@link WaitingQueue} reference that can be used to populate a GUI.
      */
     public static WaitingQueue getWaitingQueue() {
@@ -102,10 +106,11 @@ public class Main {
 
     /**
      * Creates a {@link FoodQueue}[] object according to the given layout.
-     * @param queueLayout An array of lengths of each queue. Ensure that the sizes are given in ascending order.
+     *
+     * @param queueLayout An array of lengths of each queue.
      * @return A reference to the newly created {@link FoodQueue}[] instance.
      */
-    private static FoodQueue[] initQueues(int[] queueLayout) {
+    private static FoodQueue[] genQueues(int[] queueLayout) {
         FoodQueue[] tempQueue = new FoodQueue[queueLayout.length];
 
         for (int i = 0; i < tempQueue.length; i++) {
@@ -116,7 +121,41 @@ public class Main {
     }
 
     /**
+     * Generate an array of indices that reflects the ascending order of the {@link FoodQueue}[]
+     * object that is passed in.
+     *
+     * @param foodQueues The array that will have it's order generated.
+     * @return An array of indices indicating the ascending order.
+     */
+    private static int[] genQueuesInsertionOrder(FoodQueue[] foodQueues) {
+        int[] insertionOrder = new int[foodQueues.length];
+
+        for (int i = 0; i < foodQueues.length; i++) {
+            insertionOrder[i] = i;
+        }
+
+        boolean swapped = true;
+
+        while (swapped) {
+            swapped = false;
+
+            for (int i = 0; i < insertionOrder.length - 1; i++) {
+                if (foodQueues[insertionOrder[i]].getQueueLength() >
+                        foodQueues[insertionOrder[i + 1]].getQueueLength()) {
+                    int temp = insertionOrder[i];
+                    insertionOrder[i] = insertionOrder[i + 1];
+                    insertionOrder[i + 1] = temp;
+                    swapped = true;
+                }
+            }
+        }
+
+        return insertionOrder;
+    }
+
+    /**
      * A helper method to show a prompt and get some input from the user.
+     *
      * @param prompt The prompt that will be shown to the user.
      * @return The input received from the user.
      */
@@ -127,12 +166,13 @@ public class Main {
 
     /**
      * Prompt and get an integer value from the user. If any of the checks fails an exception may be thrown.
+     *
      * @param prompt The prompt that will be shown to the user.
-     * @param start The start of the number range that will be accepted. Inclusive.
-     * @param end The end of the number range that will be accepted. Exclusive.
+     * @param start  The start of the number range that will be accepted. Inclusive.
+     * @param end    The end of the number range that will be accepted. Exclusive.
      * @return An int that is within the given range.
      * @throws SelectionOutOfRangeException Thrown when the input is out of the acceptable range.
-     * @throws NumberFormatException Thrown if a non-numeric value is entered.
+     * @throws NumberFormatException        Thrown if a non-numeric value is entered.
      */
     private static int intInputPrompt(String prompt, int start, int end)
             throws SelectionOutOfRangeException, NumberFormatException {
@@ -146,7 +186,8 @@ public class Main {
     }
 
     /**
-     * A number of hardcoded validation cases are checked by this methods.
+     * A number of hardcoded validation cases are checked by this method.
+     *
      * @param input A string that needs to be validated.
      * @return The validated string.
      * @throws InputValidationException The reason for the failure is passed in the exception message.
@@ -175,8 +216,8 @@ public class Main {
     }
 
     /**
-     * Sorts all customers in food queues using bubble sort and sets the result in {@link Main#sortedCustomerList},
-     * {@link Main#shouldSortCustomerList} is set to false after running this method.
+     * Sorts all customers in food queues using bubble sort and sets the result in {@link TUIController#sortedCustomerList},
+     * {@link TUIController#shouldSortCustomerList} is set to false after running this method.
      */
     private static void sortCustomers() {
         int totalCustomersLength = 0;
@@ -217,6 +258,7 @@ public class Main {
 
     /**
      * An implementation of the bubble sort algorithm.
+     *
      * @param array The array that will be sorted in-place.
      */
     private static void bubbleSortCustomers(Customer[] array) {
@@ -264,7 +306,8 @@ public class Main {
 
     /**
      * Displays the given text with decoration and padding as defined by
-     * {@link Main#DECOR_CHARACTER} and {@link Main#HORIZONTAL_PADDING}.
+     * {@link TUIController#DECOR_CHARACTER} and {@link TUIController#HORIZONTAL_PADDING}.
+     *
      * @param headerText
      */
     private static void displayHeader(String headerText) {
@@ -295,12 +338,13 @@ public class Main {
 
     /**
      * Displays the state of all the {@link FoodQueue} objects in the given array as well as
-     * the state of the {@link Main#waitingQueue}.
+     * the state of the {@link TUIController#waitingQueue}.
+     *
      * @param queues
      */
     private static void displayQueues(FoodQueue[] queues) {
         final String headerText = "Cashiers (Queue View)";
-        final int longestQueueLength = queues[2].getQueueLength();
+        final int longestQueueLength = queues[queuesInsertionOrder[queuesInsertionOrder.length - 1]].getQueueLength();
         final int headerLength = headerText.length() + HORIZONTAL_PADDING;
         final int paddingLength = ((headerLength / queues.length) - 1) / 2;
 
@@ -349,7 +393,7 @@ public class Main {
     }
 
     /**
-     * Uses {@link Main#displayQueues} to display {@link FoodQueue} that are not full.
+     * Uses {@link TUIController#displayQueues} to display {@link FoodQueue} that are not full.
      */
     private static void viewEmptyQueues() {
         FoodQueue[] availableQueues = new FoodQueue[queues.length];
@@ -366,15 +410,16 @@ public class Main {
     }
 
     /**
-     * Try adding a customer to each {@link FoodQueue} object in {@link Main#queues}.
-     * The {@link Main#queues} is initialized with an ascending order of lengths.
-     * This method therefore always tries from the shortest to the longest queue.
+     * Try adding a customer to each {@link FoodQueue} object in {@link TUIController#queues}.
+     * The {@link TUIController#queuesInsertionOrder} array is used to get the indexing order.
+     * This method therefore always tries to add from the shortest to the longest queue.
+     *
      * @param customer The customer to add to a queue.
-     * @return The number of the queue that the customer was added to. -1 if {@link Main#waitingQueue} was used.
-     * @throws FullQueueException Is thrown only if all queues and the {@link Main#waitingQueue} are all full.
+     * @return The number of the queue that the customer was added to. -1 if {@link TUIController#waitingQueue} was used.
+     * @throws FullQueueException Is thrown only if all queues and the {@link TUIController#waitingQueue} are full.
      */
     private static int tryAddCustomer(Customer customer) throws FullQueueException {
-        for (int i = 0; i < queues.length; i++) {
+        for (int i : queuesInsertionOrder) {
             try {
                 queues[i].addCustomer(customer);
                 return i;
@@ -388,8 +433,9 @@ public class Main {
     }
 
     /**
-     * Attempts to add a customer from the {@link Main#waitingQueue} into a {@link FoodQueue}.
-     * Only call this method after removing a customer from any {@link FoodQueue} that is held in {@link Main#queues}.
+     * Attempts to add a customer from the {@link TUIController#waitingQueue} into a {@link FoodQueue}.
+     * Only call this method after removing a customer from any {@link FoodQueue} that is held in {@link TUIController#queues}.
+     *
      * @throws FullQueueException
      */
     private static void tryAddCustomerFromWaiting() throws FullQueueException {
@@ -409,7 +455,7 @@ public class Main {
 
     /**
      * Prompt the user for customer info and attempt the customer to the queue.
-     * This method will set {@link Main#shouldSortCustomerList} to true.
+     * This method will set {@link TUIController#shouldSortCustomerList} to true.
      */
     private static void addCustomerToQueue() {
         displayHeader("Add Customer");
@@ -447,8 +493,8 @@ public class Main {
 
     /**
      * Prompts the user for a position and removes a customer.
-     * This method will set {@link Main#shouldSortCustomerList} to true.
-     * This method also calls {@link Main#tryAddCustomerFromWaiting()}.
+     * This method will set {@link TUIController#shouldSortCustomerList} to true.
+     * This method also calls {@link TUIController#tryAddCustomerFromWaiting()}.
      */
     private static void removeCustomerFromQueue() {
         displayHeader("Remove Customer");
@@ -490,8 +536,8 @@ public class Main {
     /**
      * Removes a customer from the selected queue if there is enough stock to serve them.
      * This method will call {@link FoodQueue#setItemStock(int)}.
-     * This method will set {@link Main#shouldSortCustomerList} to true.
-     * This method also calls {@link Main#tryAddCustomerFromWaiting()}.
+     * This method will set {@link TUIController#shouldSortCustomerList} to true.
+     * This method also calls {@link TUIController#tryAddCustomerFromWaiting()}.
      */
     private static void removeServedCustomer() {
         displayHeader("Remove Served Customer");
@@ -527,8 +573,8 @@ public class Main {
     }
 
     /**
-     * Show all the customers stored in {@link Main#sortedCustomerList}.
-     * if {@link Main#shouldSortCustomerList} is true this method will call {@link Main#sortCustomers()}
+     * Show all the customers stored in {@link TUIController#sortedCustomerList}.
+     * if {@link TUIController#shouldSortCustomerList} is true this method will call {@link TUIController#sortCustomers()}
      * before displaying anything.
      */
     private static void viewSortedCustomers() {
@@ -548,7 +594,7 @@ public class Main {
     }
 
     /**
-     * Stores program data as text at {@link Main#FILE_PATH}.
+     * Stores program data as text at {@link TUIController#FILE_PATH}.
      */
     private static void storeProgramData() {
         displayHeader("Store Program Data");
@@ -577,8 +623,8 @@ public class Main {
     }
 
     /**
-     * Load data from a file at {@link Main#FILE_PATH}.
-     * May mutate {@link Main#queues} and {@link Main#waitingQueue}.
+     * Load data from a file at {@link TUIController#FILE_PATH}.
+     * May mutate {@link TUIController#queues} and {@link TUIController#waitingQueue}.
      */
     private static void loadProgramData() {
         displayHeader("Load Program Data");
@@ -688,6 +734,7 @@ public class Main {
 
             FoodQueue.setItemStock(newFoodStock);
             queues = loadedQueues;
+            queuesInsertionOrder = genQueuesInsertionOrder(queues);
             waitingQueue = new WaitingQueue(loadedWaitingQueue);
 
             System.out.println("Data loaded successfully!");
@@ -733,7 +780,7 @@ public class Main {
     }
 
     /**
-     * View income from each {@link FoodQueue}.
+     * View income for any selected {@link FoodQueue} in {@link TUIController#queues}.
      */
     private static void viewQueueIncome() {
         displayHeader("View Queue Income");
@@ -761,21 +808,21 @@ public class Main {
     }
 
     /**
-     * Shutdown the internal FX thread and allow the program to exit.
+     * Shutdown the internal JavaFX application thread and allow the program to exit.
      */
     private static void deInitGui() {
         Platform.exit();
     }
 
     /**
-     * Create a stage and load the viewer application.
+     * Create a stage and load the viewer.
      * This method will run actual widget creation on the FX application thread.
      * This method does not block.
      */
     private static void startGui() {
         Platform.runLater(() -> {
             try {
-                FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("queue-viewer.fxml"));
+                FXMLLoader fxmlLoader = new FXMLLoader(TUIController.class.getResource("queue-viewer.fxml"));
 
                 Scene primaryScene = new Scene(fxmlLoader.load());
                 Stage primaryStage = new Stage();

@@ -26,8 +26,8 @@ public class GUIController {
 
     @FXML
     protected void initialize() {
-        this.queues = Main.getQueues();
-        this.waitingQueue = Main.getWaitingQueue();
+        this.queues = TUIController.getQueues();
+        this.waitingQueue = TUIController.getWaitingQueue();
         this.queueContainer.getChildren().clear();
 
         this.constructQueues();
