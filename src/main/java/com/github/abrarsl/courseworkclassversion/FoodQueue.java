@@ -2,6 +2,11 @@ package com.github.abrarsl.courseworkclassversion;
 
 import com.github.abrarsl.courseworkclassversion.exceptions.*;
 
+/**
+ * A class that is used to store and manipulate a queue of Customer objects.
+ * The class will also statically store info such as stock information.
+ * Each instance of the class will also track the total income.
+ */
 public class FoodQueue {
     private final Customer[] queue;
     private static final int ITEM_PRICE = 650;
@@ -13,12 +18,19 @@ public class FoodQueue {
     private int endIndex;
     private static int itemStock = 0;
 
+    /**
+     * @param queueLength The maximum length of the {@link FoodQueue} to construct.
+     */
     public FoodQueue(int queueLength) {
         this.queue = new Customer[queueLength];
         this.queueIncome = 0;
         this.endIndex = 0;
     }
 
+    /**
+     * @param queue The internal array. Ensure there are no holes in this array.
+     * @param income The queue income value.
+     */
     public FoodQueue(Customer[] queue, int income) {
         this.queue = queue;
         this.queueIncome = income;
@@ -34,18 +46,33 @@ public class FoodQueue {
         System.out.println(this.endIndex);
     }
 
+    /**
+     * @return The length of the particular {@link FoodQueue}.
+     */
     public int getQueueLength() {
         return this.queue.length;
     }
 
+    /**
+     * @return The total income for the particular {@link FoodQueue}.
+     */
     public int getQueueIncome() {
         return this.queueIncome;
     }
 
+    /**
+     * @return The stock information for all {@link FoodQueue}.
+     */
     public static int getItemStock() {
         return itemStock;
     }
 
+    /**
+     * Will set {@link FoodQueue#itemStock}.
+     * @param newItemStock The stock value to be set.
+     * @throws StockOutOfRangeException Will be thrown if given stock is not between
+     * {@link FoodQueue#MIN_STOCK} and {@link FoodQueue#MAX_STOCK}
+     */
     public static void setItemStock(int newItemStock) throws StockOutOfRangeException {
         if (newItemStock > MAX_STOCK || newItemStock < MIN_STOCK) {
             throw new StockOutOfRangeException(
@@ -60,14 +87,24 @@ public class FoodQueue {
         FoodQueue.itemStock = newItemStock;
     }
 
+    /**
+     * @return 'true' if {@link FoodQueue#itemStock} is lower than or equal to {@link FoodQueue#STOCK_WARN_THRESHOLD}.
+     */
     public static boolean isStockLow() {
         return getItemStock() <= STOCK_WARN_THRESHOLD;
     }
 
+    /**
+     * @return 'true' if {@link FoodQueue} is full.
+     */
     public boolean isQueueFull() {
         return this.endIndex >= this.getQueueLength();
     }
 
+    /**
+     * @param selection The number to be checked.
+     * @throws SelectionOutOfRangeException If the given number is out of bounds for the internal queue.
+     */
     private void validateSelection(int selection) throws SelectionOutOfRangeException {
         if (selection < 0 || selection >= this.getQueueLength()) {
             throw new SelectionOutOfRangeException(
@@ -80,6 +117,10 @@ public class FoodQueue {
         }
     }
 
+    /**
+     * Shifts all elements to the right of the given point one step to the left.
+     * @param startPosition The index to start shifting from.
+     */
     private void shiftLeftQueue(int startPosition) {
         for (int i = startPosition; i < this.getQueueLength() - 1; i++) {
             this.queue[i] = this.queue[i + 1];
@@ -89,11 +130,21 @@ public class FoodQueue {
         this.endIndex--;
     }
 
+    /**
+     * @param customerIndex The position of the {@link Customer} in the {@link FoodQueue}.
+     * @return Reference to the {@link Customer}.
+     * @throws SelectionOutOfRangeException
+     */
     public Customer getCustomer(int customerIndex) throws SelectionOutOfRangeException {
         this.validateSelection(customerIndex);
         return this.queue[customerIndex];
     }
 
+    /**
+     * Adds a {@link Customer} to the end of the {@link FoodQueue}.
+     * @param customer The {@link Customer} to be added.
+     * @throws FullQueueException If {@link FoodQueue} is full.
+     */
     public void addCustomer(Customer customer) throws FullQueueException {
         if (this.isQueueFull()) {
             throw new FullQueueException();
@@ -102,6 +153,13 @@ public class FoodQueue {
         this.queue[this.endIndex++] = customer;
     }
 
+    /**
+     * Remove {@link Customer} from the given position. All elements are shifted to remove holes in the {@link FoodQueue}.
+     * @param customerIndex The index from which to remove the {@link Customer}.
+     * @return A reference to the {@link Customer} that was removed.
+     * @throws SelectionOutOfRangeException If given index is out of range.
+     * @throws CustomerNotFoundException If {@link Customer} cannot be found at the given position.
+     */
     public Customer removeCustomer(int customerIndex) throws SelectionOutOfRangeException, CustomerNotFoundException {
         this.validateSelection(customerIndex);
         Customer customer = this.queue[customerIndex];
@@ -114,6 +172,12 @@ public class FoodQueue {
         return customer;
     }
 
+    /**
+     * Serve the {@link Customer} at the front of the {@link FoodQueue}.
+     * @return A reference to the served {@link Customer}.
+     * @throws CustomerNotFoundException If a {@link Customer} is not available at the front of the {@link FoodQueue}.
+     * @throws InsufficientStockException If the stock level is not enough to serve the {@link Customer}.
+     */
     public Customer serveCustomer() throws CustomerNotFoundException, InsufficientStockException {
         final int queuePosition = 0;
         Customer customer = this.queue[queuePosition];
@@ -135,6 +199,12 @@ public class FoodQueue {
         return customer;
     }
 
+    /**
+     * Search for {@link Customer}s with the given search term within their name.
+     * Searches are case-insensitive.
+     * @param searchTerm The search term that is checked.
+     * @return An array of {@link Customer}s who match the criteria.
+     */
     public Customer[] searchCustomer(String searchTerm) {
         Customer[] tempQueue = new Customer[this.getQueueLength()];
 
@@ -147,6 +217,9 @@ public class FoodQueue {
         return tempQueue;
     }
 
+    /**
+     * @return A string representation of the {@link FoodQueue} instance.
+     */
     @Override
     public String toString() {
         StringBuilder state = new StringBuilder(
