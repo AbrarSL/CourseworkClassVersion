@@ -202,6 +202,8 @@ public class FoodQueue {
     /**
      * Search for {@link Customer}s with the given search term within their name.
      * Searches are case-insensitive.
+     * The returned array has null holes in it.
+     * This is useful to ensure that the position data is not lost.
      * @param searchTerm The search term that is checked.
      * @return An array of {@link Customer}s who match the criteria.
      */
