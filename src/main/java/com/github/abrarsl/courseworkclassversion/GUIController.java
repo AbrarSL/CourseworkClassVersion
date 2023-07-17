@@ -1,10 +1,12 @@
 package com.github.abrarsl.courseworkclassversion;
 
 import com.github.abrarsl.courseworkclassversion.exceptions.SelectionOutOfRangeException;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -35,29 +37,33 @@ public class GUIController {
     }
 
     protected void constructQueues() {
+        ObservableList<Node> queueContainerChildren = this.queueContainer.getChildren();
+
         for (int i = 0; i < this.queues.length; i++) {
             VBox queueBox = this.createQueueBox("Queue " + i);
+            ObservableList<Node> queueBoxChildren = queueBox.getChildren();
 
             try {
                 for (int j = 0; j < this.queues[i].getQueueLength(); j++) {
                     Customer customer = this.queues[i].getCustomer(j);
                     Label customerLabel = this.createCustomerLabel(customer, i, j, this::handleCustomerAction);
-                    queueBox.getChildren().add(customerLabel);
+                    queueBoxChildren.add(customerLabel);
                 }
             } catch (SelectionOutOfRangeException ignored) {
             }
 
-            this.queueContainer.getChildren().add(queueBox);
+            queueContainerChildren.add(queueBox);
         }
     }
 
     protected void constructWaitingQueues() {
         VBox waitingBox = this.createQueueBox("Waiting Queue");
+        ObservableList<Node> waitingBoxChildren = waitingBox.getChildren();
 
         for (int i = 0; i < this.waitingQueue.getQueueLength(); i++) {
             Customer customer = this.waitingQueue.getQueue()[i];
             Label customerLabel = this.createCustomerLabel(customer, -1, i, this::handleCustomerAction);
-            waitingBox.getChildren().add(customerLabel);
+            waitingBoxChildren.add(customerLabel);
         }
 
         this.queueContainer.getChildren().add(waitingBox);
@@ -125,7 +131,9 @@ public class GUIController {
 
     @FXML
     protected void handleSearchAction() {
-        this.searchResultContainer.getChildren().clear();
+        ObservableList<Node> resultContainerChildren = this.searchResultContainer.getChildren();
+        resultContainerChildren.clear();
+
         String searchTerm = this.searchField.getText();
         this.searchField.setText("");
 
@@ -135,7 +143,7 @@ public class GUIController {
             for (int j = 0; j < foundCustomers.length; j++) {
                 if (foundCustomers[j] != null) {
                     Label customerLabel = this.createCustomerLabel(foundCustomers[j], i, j, this::handleCustomerAction);
-                    this.searchResultContainer.getChildren().add(customerLabel);
+                    resultContainerChildren.add(customerLabel);
                 }
             }
         }
@@ -145,7 +153,7 @@ public class GUIController {
         for (int i = 0; i < foundWaitingCustomers.length; i++) {
             if (foundWaitingCustomers[i] != null) {
                 Label customerLabel = this.createCustomerLabel(foundWaitingCustomers[i], -1, i, this::handleCustomerAction);
-                this.searchResultContainer.getChildren().add(customerLabel);
+                resultContainerChildren.add(customerLabel);
             }
         }
     }
