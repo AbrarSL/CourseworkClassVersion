@@ -1,0 +1,73 @@
+
+X
+java:S1141‡"5Extract this nested try block into a separate method.(¡»¢üùÿÿÿÿ8À¯¾–1
+Z	java:S106P"9Replace this use of System.out or System.err by a logger.(î‡ó©ùÿÿÿÿ8à³¾–1
+U	java:S106T"9Replace this use of System.out or System.err by a logger.(‹ü´ï8æ³¾–1
+[	java:S106£"9Replace this use of System.out or System.err by a logger.(Æİêùÿÿÿÿ8ç³¾–1
+K	java:S108ò")Either remove or fill this block of code.(Æ¸Û‚øÿÿÿÿ8ƒ²§‘–1
+|
+java:S3012û"YUse "Arrays.copyOf", "Arrays.asList", "Collections.addAll" or "System.arraycopy" instead.(ªçÑÉıÿÿÿÿ8„²§‘–1
+[	java:S106²"9Replace this use of System.out or System.err by a logger.(´ıêÿÿÿÿÿ8é³¾–1
+[	java:S106¿"9Replace this use of System.out or System.err by a logger.(”µŞûüÿÿÿÿ8é³¾–1
+V	java:S106À"9Replace this use of System.out or System.err by a logger.(ä´ûÑ8é³¾–1
+[	java:S106È"9Replace this use of System.out or System.err by a logger.(”µŞûüÿÿÿÿ8®¯Ù–1
+V	java:S106Ñ"9Replace this use of System.out or System.err by a logger.(Ôò¤·8¯¯Ù–1
+[	java:S106æ"9Replace this use of System.out or System.err by a logger.(ŸÂó¦úÿÿÿÿ8¯¯Ù–1
+V	java:S106ê"9Replace this use of System.out or System.err by a logger.(×•œ²8±¯Ù–1
+[	java:S106ì"9Replace this use of System.out or System.err by a logger.(ôÄØÙıÿÿÿÿ8‡²§‘–1
+V	java:S106î"9Replace this use of System.out or System.err by a logger.(¡ô‹‡8‡²§‘–1
+[	java:S106ñ"9Replace this use of System.out or System.err by a logger.(ŸÂó¦úÿÿÿÿ8‡²§‘–1
+K	java:S108ò")Either remove or fill this block of code.(Æ¸Û‚øÿÿÿÿ8‡²§‘–1
+[	java:S106ö"9Replace this use of System.out or System.err by a logger.(ªÓ¼áşÿÿÿÿ8ˆ²§‘–1
+[	java:S106ÿ"9Replace this use of System.out or System.err by a logger.(½ß¡ùıÿÿÿÿ8ˆ²§‘–1
+V	java:S106"9Replace this use of System.out or System.err by a logger.(¿ˆ÷ö8ˆ²§‘–1
+V	java:S106‰"9Replace this use of System.out or System.err by a logger.(‹°äÏ8‰²§‘–1
+U	java:S106­"9Replace this use of System.out or System.err by a logger.(¥Áñw8Š²§‘–1
+V	java:S106¿"9Replace this use of System.out or System.err by a logger.(ğÖ8Š²§‘–1
+[	java:S106Å"9Replace this use of System.out or System.err by a logger.(ÃØÖ¦üÿÿÿÿ8‹²§‘–1
+[	java:S106å"9Replace this use of System.out or System.err by a logger.(ŞŸŞ­ÿÿÿÿÿ8Œ²§‘–1
+V	java:S106ç"9Replace this use of System.out or System.err by a logger.(Óš©ü8Œ²§‘–1
+[	java:S106è"9Replace this use of System.out or System.err by a logger.(‘‹çıÿÿÿÿ8²§‘–1
+V	java:S106ê"9Replace this use of System.out or System.err by a logger.(€É·Õ8²§‘–1
+[	java:S106ì"9Replace this use of System.out or System.err by a logger.(â¨¦íÿÿÿÿÿ8²§‘–1
+V	java:S106í"9Replace this use of System.out or System.err by a logger.(Øò§å8²§‘–1
+V	java:S106‹"9Replace this use of System.out or System.err by a logger.(ÑÛÊÉ8²§‘–1
+[	java:S106"9Replace this use of System.out or System.err by a logger.(¿ŠÃÆûÿÿÿÿ8²§‘–1
+V	java:S106’"9Replace this use of System.out or System.err by a logger.(®›´8²§‘–1
+V	java:S106”"9Replace this use of System.out or System.err by a logger.(¬üµ‚8²§‘–1
+V	java:S106–"9Replace this use of System.out or System.err by a logger.(ñ·¤¬8²§‘–1
+K	java:S108—")Either remove or fill this block of code.(˜ë³ûÿÿÿÿ8²§‘–1
+V	java:S106¯"9Replace this use of System.out or System.err by a logger.(ğÖ8²§‘–1
+V	java:S106·"9Replace this use of System.out or System.err by a logger.(®›´8²§‘–1
+V	java:S106¹"9Replace this use of System.out or System.err by a logger.(¬üµ‚8²§‘–1
+[	java:S106»"9Replace this use of System.out or System.err by a logger.(Šò±øûÿÿÿÿ8²§‘–1
+V	java:S106½"9Replace this use of System.out or System.err by a logger.(ñ·¤¬8‘²§‘–1
+K	java:S108¾")Either remove or fill this block of code.(˜ë³ûÿÿÿÿ8‘²§‘–1
+V	java:S106Ğ"9Replace this use of System.out or System.err by a logger.(ëî·Ğ8‘²§‘–1
+V	java:S106Ñ"9Replace this use of System.out or System.err by a logger.(½’âÍ8‘²§‘–1
+V	java:S106Ò"9Replace this use of System.out or System.err by a logger.(ĞÍº8’²§‘–1
+V	java:S106Ó"9Replace this use of System.out or System.err by a logger.(¬¾éè8’²§‘–1
+[	java:S106İ"9Replace this use of System.out or System.err by a logger.(¶¹˜Æÿÿÿÿÿ8’²§‘–1
+V	java:S106ñ"9Replace this use of System.out or System.err by a logger.(‚¨¼‘8“²§‘–1
+V	java:S106ó"9Replace this use of System.out or System.err by a logger.(–ÿ®8“²§‘–1
+u
+java:S3776û"RRefactor this method to reduce its Cognitive Complexity from 31 to the 15 allowed.(á¨Å¿üÿÿÿÿ8”²§‘–1
+[	java:S106ş"9Replace this use of System.out or System.err by a logger.(ÜÎ“Şúÿÿÿÿ8”²§‘–1
+V	java:S106ñ"9Replace this use of System.out or System.err by a logger.(“èÌ8¯²§‘–1
+[	java:S106ó"9Replace this use of System.out or System.err by a logger.(ò„Óèøÿÿÿÿ8¯²§‘–1
+V	java:S106õ"9Replace this use of System.out or System.err by a logger.(ñ·¤¬8¯²§‘–1
+[	java:S106ö"9Replace this use of System.out or System.err by a logger.(¡²Ş¦ÿÿÿÿÿ8°²§‘–1
+[	java:S106ø"9Replace this use of System.out or System.err by a logger.(±¸—üÿÿÿÿ8°²§‘–1
+V	java:S106ù"9Replace this use of System.out or System.err by a logger.(ñ·¤¬8°²§‘–1
+[	java:S106ú"9Replace this use of System.out or System.err by a logger.(¡²Ş¦ÿÿÿÿÿ8±²§‘–1
+[	java:S106ƒ"9Replace this use of System.out or System.err by a logger.(™ùŠöúÿÿÿÿ8±²§‘–1
+[	java:S106Œ"9Replace this use of System.out or System.err by a logger.(»İÙùÿÿÿÿ8²²§‘–1
+V	java:S106•"9Replace this use of System.out or System.err by a logger.(Óš©ü8³²§‘–1
+V	java:S106—"9Replace this use of System.out or System.err by a logger.(œˆåÏ8³²§‘–1
+V	java:S106¦"9Replace this use of System.out or System.err by a logger.(ßËÎĞ8´²§‘–1
+V	java:S106¨"9Replace this use of System.out or System.err by a logger.(¬üÿ8µ²§‘–1
+V	java:S106ª"9Replace this use of System.out or System.err by a logger.(ä´Ã”8µ²§‘–1
+V	java:S106«"9Replace this use of System.out or System.err by a logger.(ñ·¤¬8µ²§‘–1
+E	java:S108Î")Either remove or fill this block of code.(”ã‰G8Ã²§‘–1
+é
+java:S6541û"ÅA "Brain Method" was detected. Refactor it to reduce at least one of the following metrics: LOC from 91 to 64, Complexity from 16 to 14, Nesting Level from 4 to 2, Number of Variables from 23 to 6.(á¨Å¿üÿÿÿÿ8Ä²§‘–1
