@@ -24,7 +24,7 @@ public class TUIController {
     private static boolean shouldSortCustomerList = true;
 
     public static void main(String[] args) {
-        queues = genQueues(new int[]{7, 5, 2}); // MUST be called before running program
+        queues = genQueues(new int[]{2, 3, 5}); // MUST be called before running program
         queuesInsertionOrder = genQueuesInsertionOrder(queues); // MUST be called before running the program
         waitingQueue = new WaitingQueue(5); // MUST be set before running program
         initGui(); // MUST be called before launching GUI
